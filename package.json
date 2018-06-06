@@ -1,0 +1,24 @@
+{
+  "name": "cyclos_client",
+  "version": "0.0.1",
+  "description": "Cyclos client",
+  "main": "index.js",
+  "dependencies": {
+    "request": "^2.87.0",
+    "request-promise-native": "^1.0.5"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coeniebeyers/cyclos_client.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/coeniebeyers/cyclos_client/issues"
+  },
+  "homepage": "https://github.com/coeniebeyers/cyclos_client#readme"
+}
