@@ -4,12 +4,14 @@
   "description": "Cyclos client",
   "main": "index.js",
   "dependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^5.2.0",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/mocha --exit --reporter spec test"
   },
   "repository": {
     "type": "git",
