@@ -1,4 +1,5 @@
-const rp = require('request-promise-native')
+const fetch = require('node-fetch')
+
 const config = {
   apiServerAddress: 'http://localhost:4000'
 }
@@ -6,18 +7,18 @@ const config = {
 async function getAuth(username, password){
   const credentials = username+':'+password
   const base64Credentials = Buffer.from(credentials).toString('base64')
+  const uri = config.apiServerAddress + '/api/auth/session?fields=sessionToken'
   const options = {
-    method: 'GET',
-    uri: config.apiServerAddress + '/api/auth',
-    json: true,
+    method: 'POST',
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
+      'content-type': 'application/x-www-form-urlencoded',
       'Authorization': 'Basic '+base64Credentials
     }
   }
   try{
-    let response = await rp(options)
-    return response
+    const response = await (await fetch(uri, options)).json()
+
+    return response.sessionToken
   } catch(err){
     console.log('ERROR with calling /api/auth:', err)
     return {
@@ -28,5 +29,5 @@ async function getAuth(username, password){
 
 module.exports = {
   getAuth,
-  config
+  config,
 }
