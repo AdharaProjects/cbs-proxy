@@ -35,7 +35,9 @@ router.use(bodyParser.json())
  */
 router.post('/getAuth', async function(req, res){
   try{
-    const authToken = await auth.getAuth('admin', 'abcd')
+    const authCredentials = req.body.authCredentials
+    await checkParams(authCredentials, ['username', 'password'])
+    const authToken = await auth.getAuth(authCredentials.username, authCredentials.password)
     res.send({
       authToken
     })
