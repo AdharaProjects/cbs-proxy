@@ -38,9 +38,9 @@ router.post('/getAuth', async function(req, res){
   try{
     const authCredentials = req.body
     await checkParams(authCredentials, ['username', 'password'])
-    const authToken = await auth.getAuth(authCredentials.username, authCredentials.password)
+    const sessionToken = await auth.getAuth(authCredentials.username, authCredentials.password)
     res.send({
-      authToken
+      sessionToken
     })
   } catch (err) {
     console.error('Error calling the `auth.getAuth` function:', err)
