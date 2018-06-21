@@ -3,6 +3,7 @@ const router = express.Router()
 const bodyParser = require('body-parser')
 
 const auth = require('./auth.js')
+const accounts = require('./accounts.js')
 const checkParams = require('../util.js').checkParams
 
 router.use(bodyParser.urlencoded({extended: true}))
@@ -35,11 +36,41 @@ router.use(bodyParser.json())
  */
 router.post('/getAuth', async function(req, res){
   try{
-    const authCredentials = req.body.authCredentials
+    const authCredentials = req.body
     await checkParams(authCredentials, ['username', 'password'])
     const authToken = await auth.getAuth(authCredentials.username, authCredentials.password)
     res.send({
       authToken
+    })
+  } catch (err) {
+    console.error('Error calling the `auth.getAuth` function:', err)
+    res.send({
+      'error': 'ERROR while processing request. Please contact the system admin: '+err
+    })
+  }
+})
+
+/**
+ * @swagger
+ * /cbs/getOmnibusAccountId:
+ *   post:
+ *     tags:
+ *       - getOmnibusAccountId
+ *     description: Returns the highest block number on the node
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200: {
+ *         description: Returns the id of the omnibus account
+ *       }
+ */
+router.post('/getOmnibusAccountId', async function(req, res){
+  try{
+    const authCredentials = req.body
+    await checkParams(authCredentials, ['sessionToken'])
+    const omnibusAccountId = await accounts.getOmnibusAccount(authCredentials.sessionToken)
+    res.send({
+      omnibusAccountId
     })
   } catch (err) {
     console.error('Error calling the `auth.getAuth` function:', err)
