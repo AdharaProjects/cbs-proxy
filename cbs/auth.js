@@ -12,7 +12,8 @@ async function getAuth(username, password){
     method: 'POST',
     headers: {
       'content-type': 'application/x-www-form-urlencoded',
-      'Authorization': 'Basic '+base64Credentials
+      Authorization: 'Basic '+base64Credentials,
+      Channel: 'main',
     }
   }
   try{
