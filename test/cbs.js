@@ -3,7 +3,8 @@ const assert = require('chai').assert
 const fetch = require('node-fetch')
 
 const fetchJson = async (uri, options) => await (await fetch(uri, options)).json()
-const baseUrl = 'http://localhost:3000'
+const baseUrlProxy = 'http://localhost:3000'
+const baseUrlCBS = 'http://localhost:4000'
 const fetchOptionsTemplate = {
   method: 'POST',
   headers: {
@@ -11,37 +12,62 @@ const fetchOptionsTemplate = {
     'Accept': 'application/json',
   }
 }
-const getAuthUri = baseUrl + '/cbs/getAuth'
-const getAuthOptions = {
+const getAuthUri = baseUrlProxy + '/cbs/getAuth'
+const getAuthOptions = username => ({
   ...fetchOptionsTemplate,
   body: JSON.stringify({
-    username: 'admin',
+    username,
     password: 'abcd'
   })
-}
-const getOmnibusAccountIdUri = baseUrl + '/cbs/getOmnibusAccountId'
-const getOmnibusAccountdOption = sessionToken => ({
+})
+const getOmnibusAccountIdUri = baseUrlProxy + '/cbs/getOmnibusAccountId'
+const getOmnibusAccountIdOption = sessionToken => ({
   ...fetchOptionsTemplate,
   body: JSON.stringify({
     sessionToken
   })
 })
+const makeTransferToOmnibusUri = baseUrlCBS + '/api/self/payments?fields=id&fields=authorizationStatus'
+const makeTransferToOmnibusOption = (sessionToken, transferDataBody) => ({
+  ...fetchOptionsTemplate,
+  headers: {
+    ...fetchOptionsTemplate.headers,
+    'Session-Token': sessionToken,
+  },
+  body: JSON.stringify(transferDataBody)
+})
+
+// TODO: make these transfers randam,
+const makeRandomTransfersToOmnibusAccount = async (numberOfTransfers, sessionToken) => {
+  for(let i = 0; i< numberOfTransfers; ++i) {
+    let result = await fetchJson(makeTransferToOmnibusUri ,makeTransferToOmnibusOption(sessionToken, {"amount":'1.0' + i,"description":"randomTest #","type":"user.toOrganization","subject":"system"}))
+  }
+}
 
 describe("The core banking system proxy", function() {
-  this.timeout(10*1000)
+  this.timeout(30*1000)
 
-  let sessionToken
+  let adminSessionToken
+  let user1SessionToken
+  let user2SessionToken
 
   before (async () => {
-    sessionToken = (await fetchJson(getAuthUri, getAuthOptions)).sessionToken
-    expect(sessionToken).to.be.a("string")
+    adminSessionToken = (await fetchJson(getAuthUri, getAuthOptions('admin'))).sessionToken
+    user1SessionToken = (await fetchJson(getAuthUri, getAuthOptions('user1'))).sessionToken
+    user2SessionToken = (await fetchJson(getAuthUri, getAuthOptions('user2'))).sessionToken
+    expect(adminSessionToken).to.be.a("string")
+    console.log(user1SessionToken)
+    expect(user1SessionToken).to.be.a("string")
+    expect(user2SessionToken).to.be.a("string")
+
+    await makeRandomTransfersToOmnibusAccount(6, user1SessionToken)
   })
 
   describe("Getting information about transactions to the Omnibus Account", async () => {
     let omnibusAccountId
 
     before (async () => {
-      omnibusAccountId = (await fetchJson(getOmnibusAccountIdUri ,getOmnibusAccountdOption(sessionToken))).omnibusAccountId
+      omnibusAccountId = (await fetchJson(getOmnibusAccountIdUri ,getOmnibusAccountIdOption(adminSessionToken))).omnibusAccountId
       expect(omnibusAccountId).to.be.a("string")
       expect(parseInt(omnibusAccountId)).to.be.a("number")
     })
