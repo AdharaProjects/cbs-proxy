@@ -27,6 +27,17 @@ const getOmnibusAccountIdOption = sessionToken => ({
     sessionToken
   })
 })
+const accountSummaryUri = baseUrlProxy + '/cbs/accountSummary'
+const accountSummaryOption = (sessionToken, accountId, queryParameters) => ({
+  ...fetchOptionsTemplate,
+  body: JSON.stringify({
+    sessionToken,
+    accountId,
+    queryParameters
+  })
+})
+  })
+})
 const makeTransferToOmnibusUri = baseUrlCBS + '/api/self/payments?fields=id&fields=authorizationStatus'
 const makeTransferToOmnibusOption = (sessionToken, transferDataBody) => ({
   ...fetchOptionsTemplate,
@@ -72,7 +83,9 @@ describe("The core banking system proxy", function() {
       expect(parseInt(omnibusAccountId)).to.be.a("number")
     })
 
-    it("Placeholder for when I add real tests", async () => {
+    it("should return a summary of the account", async () => {
+      const result = (await fetchJson(accountSummaryUri, accountSummaryOption(adminSessionToken, omnibusAccountId, {})))
+      // TODO:: Add meaningful tests
       assert(true)
     })
   })

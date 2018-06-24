@@ -16,7 +16,6 @@ async function getOmnibusAccount(sessionToken){
   try{
     const response = await (await fetch(uri, options)).json()
 
-    console.log(JSON.stringify(response, null, 2))
     return response.account.id
   } catch(err){
     console.log('ERROR with calling /api/getOmnibusAccountId:', err)
@@ -26,7 +25,30 @@ async function getOmnibusAccount(sessionToken){
   }
 }
 
+// TODO: Add query parameters
+async function accountSummary(sessionToken, accountId, queryParameters) {
+  const uri = 'http://localhost:3022/api/self/accounts/' + accountId
+  const options = {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Session-Token': sessionToken
+    }
+  }
+  try{
+    const response = await (await fetch(uri, options)).json()
+
+    return response
+  } catch(err){
+    console.log('ERROR with calling /cbs/transfers:', err)
+    return {
+      result: false
+    }
+  }
+}
+
 module.exports = {
   getOmnibusAccount,
+  accountSummary,
   config,
 }

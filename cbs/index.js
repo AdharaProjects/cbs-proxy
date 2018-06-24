@@ -80,4 +80,32 @@ router.post('/getOmnibusAccountId', async function(req, res){
   }
 })
 
+/**
+ * @swagger
+ * /cbs/accountSummary:
+ *   post:
+ *     tags:
+ *       - accountSummary
+ *     description: Returns a sumary of accounts activity and balance
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200: {
+ *         description: Returns a summary of the account
+ *       }
+ */
+router.post('/accountSummary', async (req, res) =>{
+  try{
+    const summary = await accounts.accountSummary(req.body.sessionToken, req.body.accountId, req.body.queryParameters)
+    res.send({
+      summary
+    })
+  } catch (err) {
+    console.error('Error calling the `auth.getAuth` function:', err)
+    res.send({
+      'error': 'ERROR while processing request. Please contact the system admin: '+err
+    })
+  }
+})
+
 module.exports = router
