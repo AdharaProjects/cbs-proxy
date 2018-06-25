@@ -1,11 +1,10 @@
 const fetch = require('node-fetch')
+const queryString = require('query-string')
 
-const config = {
-  apiServerAddress: 'http://localhost:4000'
-}
+const config = require('../config.js')
 
 async function getOmnibusAccount(sessionToken){
-  const uri = config.apiServerAddress + '/api/self/accounts/organization/data-for-history'
+  const uri = config.cbsApiAddress + '/api/self/accounts/organization/data-for-history'
   const options = {
     method: 'GET',
     headers: {
@@ -16,6 +15,7 @@ async function getOmnibusAccount(sessionToken){
   try{
     const response = await (await fetch(uri, options)).json()
 
+    // console.log(JSON.stringify(response, null, 2))
     return response.account.id
   } catch(err){
     console.log('ERROR with calling /api/getOmnibusAccountId:', err)
@@ -27,7 +27,8 @@ async function getOmnibusAccount(sessionToken){
 
 // TODO: Add query parameters
 async function accountSummary(sessionToken, accountId, queryParameters) {
-  const uri = 'http://localhost:3022/api/self/accounts/' + accountId
+  const stringifiedParameters = queryString.stringify({...queryParameters})
+  const uri = config.cbsApiAddress + '/api/self/accounts/' + accountId + '?' + stringifiedParameters
   const options = {
     method: 'GET',
     headers: {

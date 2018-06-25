@@ -1,6 +1,6 @@
 const app = require('./app.js')
-const port = process.env.API_PORT || 3000
+const config = require('./config.js')
 
-const server = app.listen(port, function(){
-  console.log('Express server listening on port:', port)
+const server = app.listen(config.apiServerPort, function(){
+  console.log('Express server listening on port:', config.apiServerPort)
 })

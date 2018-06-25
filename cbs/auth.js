@@ -1,13 +1,11 @@
 const fetch = require('node-fetch')
-
-const config = {
-  apiServerAddress: 'http://localhost:4000'
-}
+const config = require('../config.js')
 
 async function getAuth(username, password){
   const credentials = username+':'+password
   const base64Credentials = Buffer.from(credentials).toString('base64')
-  const uri = config.apiServerAddress + '/api/auth/session?fields=sessionToken'
+  const uri = config.cbsApiAddress + '/api/auth/session?fields=sessionToken'
+
   const options = {
     method: 'POST',
     headers: {

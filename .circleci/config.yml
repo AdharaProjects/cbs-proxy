@@ -10,7 +10,8 @@ jobs:
 
       - run:
           name: Create virtual network for test
-          command: docker network create cyclos-cbs-proxy-test
+          command: |
+            docker network create cyclos-cbs-proxy-test
 
       - run:
           name: Start CyclosDB
@@ -29,7 +30,7 @@ jobs:
               -e DB_NAME=cyclos \
               -e DB_USER=cyclos \
               -e DB_PASSWORD=cyclospwd \
-              -p "4000:8080" \
+              -p "4001:8080" \
               -d cyclos/cyclos
 
       - run:
@@ -37,15 +38,18 @@ jobs:
           command: |
             docker build -t adharaprojects/cbs-proxy:temp-ci-test .
             # TODO: use the `cyclos-cbs-proxy-test` network and use port 8080 instead then (do this when you have a proper config file)
-            docker run --name cbs-proxy --network=host \
+            docker run --name cbs-proxy \
+              --network=host \
+              -e API_SERVER_PORT=3033 \
+              -e CBS_SERVER_ADDRESS=http://localhost:4001 \
               -d adharaprojects/cbs-proxy:temp-ci-test
 
       - run:
           name: Test cyclos network
           command: |
             # TODO: use some kind of netcat check to test if Cyclos is ready (it is VERY VERY slow to setup!)
-            sleep 30
-            docker exec cbs-proxy npm test
+            sleep 10
+            docker exec cbs-proxy npm test -e API_SERVER_PORT=3033 -e CBS_SERVER_ADDRESS=http://localhost:4001
 
       - run:
           name: Cleanup remote docker
@@ -53,3 +57,4 @@ jobs:
             docker stop cyclos cyclos-db cbs-proxy
             docker rm cyclos cyclos-db cbs-proxy
             docker network rm cyclos-cbs-proxy-test
+            # docker stop cyclos cyclos-db cbs-proxy; docker rm cyclos cyclos-db cbs-proxy; docker network rm cyclos-cbs-proxy-test
