@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const bodyParser = require('body-parser')
 
+const helpers = require('./helpers.js')
 const auth = require('./auth.js')
 const accounts = require('./accounts.js')
 const transfers = require('./transfers.js')
@@ -119,8 +120,13 @@ router.post('/getOmnibusAccountId', async function(req, res){
  *               type: object
  *               properties:
  *                 datePeriod:
- *                   type: array
- *                   example: ['2018-06-25T10:17:37.085+02:00', '2019-06-25T10:17:37.085+02:00']
+ *                   properties:
+ *                     fromTime:
+ *                       type: integer
+ *                       example: '2018-06-25T10:17:37.085+02:00'
+ *                     toTime:
+ *                       type: integer
+ *                       example: '2019-06-25T10:17:37.085+02:00'
  *                 direction:
  *                   type: enum
  *                   example: credit/debit
@@ -131,7 +137,8 @@ router.post('/getOmnibusAccountId', async function(req, res){
  */
 router.post('/accountSummary', async (req, res) =>{
   try{
-    const summary = await accounts.accountSummary(req.body.sessionToken, req.body.accountId, req.body.queryParameters)
+    const queryParameters = helpers.parseQueryParams(req.body.queryParameters)
+    const summary = await accounts.accountSummary(req.body.sessionToken, req.body.accountId, queryParameters)
     res.send(summary)
   } catch (err) {
     console.error('Error calling the `auth.getAuth` function:', err)
@@ -167,8 +174,14 @@ router.post('/accountSummary', async (req, res) =>{
  *               type: object
  *               properties:
  *                 datePeriod:
- *                   type: array
- *                   example: ['2018-06-25T10:17:37.085+02:00', '2019-06-25T10:17:37.085+02:00']
+ *                   type: object
+ *                   properties:
+ *                     fromTime:
+ *                       type: integer
+ *                       example: '2018-06-25T10:17:37.085+02:00'
+ *                     toTime:
+ *                       type: integer
+ *                       example: '2019-06-25T10:17:37.085+02:00'
  *                 direction:
  *                   type: enum
  *                   example: credit
@@ -179,7 +192,8 @@ router.post('/accountSummary', async (req, res) =>{
  */
 router.post('/transfers', async (req, res) =>{
   try{
-    const transfersResult = await transfers.transfers(req.body.sessionToken, req.body.accountId, req.body.queryParameters)
+    const queryParameters = helpers.parseQueryParams(req.body.queryParameters)
+    const transfersResult = await transfers.transfers(req.body.sessionToken, req.body.accountId, queryParameters)
     res.send(transfersResult)
   } catch (err) {
     console.error('Error calling the `auth.getAuth` function:', err)

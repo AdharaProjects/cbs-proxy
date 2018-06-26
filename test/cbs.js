@@ -2,7 +2,6 @@ const expect = require('chai').expect
 const assert = require('chai').assert
 const fetch = require('node-fetch')
 const queryString = require('query-string')
-const { DateTime } = require('luxon')
 const config = require('../config.js')
 
 const fetchJson = async (uri, options) => await (await fetch(uri, options)).json()
@@ -64,11 +63,11 @@ let endTime
 const makeRandomTransfersToOmnibusAccount = async (numberOfTransfers, sessionToken, intervalStartIndex, intervalEndIndex) => {
   for(let i = 0; i< numberOfTransfers; ++i) {
     if(i === intervalStartIndex) {
-      startTime = DateTime.local()
+      startTime = new Date()
     }
     let result = await fetchJson(makeTransferToOmnibusUri ,makeTransferToOmnibusOption(sessionToken, {"amount":'1.0' + i,"description":"randomTest #"+i,"type":"user.toOrganization","subject":"system"}))
     if(i === intervalEndIndex) {
-      endTime = DateTime.local()
+      endTime = new Date()
     }
   }
 }
@@ -115,7 +114,10 @@ describe("The core banking system proxy", function() {
         adminSessionToken,
         omnibusAccountId,
         {
-          datePeriod: [startTime.toString(), endTime.toString()]
+          datePeriod: {
+            fromTime: startTime.toString(),
+            toTime: endTime.toString()
+          }
         }
       )))
       expect(result.status.incoming.count).to.equal(5)
@@ -133,7 +135,10 @@ describe("The core banking system proxy", function() {
         adminSessionToken,
         omnibusAccountId,
         {
-          datePeriod: [startTime.toString(), endTime.toString()]
+          datePeriod: {
+            fromTime: startTime.toString(),
+            toTime: endTime.toString()
+          }
         }
       )))
       expect(result.transfers.length).to.equal(5)
@@ -143,7 +148,10 @@ describe("The core banking system proxy", function() {
         adminSessionToken,
         omnibusAccountId,
         {
-          datePeriod: [startTime.toString(), endTime.toString()],
+          datePeriod: {
+            fromTime: startTime.toString(),
+            toTime: endTime.toString()
+          },
           direction: 'debit'
         }
       )))
@@ -152,7 +160,10 @@ describe("The core banking system proxy", function() {
         adminSessionToken,
         omnibusAccountId,
         {
-          datePeriod: [startTime.toString(), endTime.toString()],
+          datePeriod: {
+            fromTime: startTime.toString(),
+            toTime: endTime.toString()
+          },
           direction: 'credit'
         }
       )))
