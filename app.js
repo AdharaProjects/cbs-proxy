@@ -1,6 +1,7 @@
 const express = require('express')
 const swaggerJSDoc = require('swagger-jsdoc')
 const cbs = require('./cbs')
+const config = require('./config.js')
 
 const app = express()
 
@@ -10,7 +11,7 @@ const swaggerDefinition = {
     version: '0.0.1',
     description: 'CBS-proxy API documentation'
   },
-  host: 'localhost:3000',
+  host: 'localhost:' + config.apiServerPort,
   basePath: '/'
 }
 
