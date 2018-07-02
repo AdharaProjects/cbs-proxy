@@ -57,25 +57,17 @@ const makeTransferToOmnibusOption = (sessionToken, transferDataBody) => ({
   body: JSON.stringify(transferDataBody)
 })
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 let startTime
 let endTime
 // TODO: make these transfers random in value
 const makeRandomTransfersToOmnibusAccount = async (numberOfTransfers, sessionToken, intervalStartIndex, intervalEndIndex) => {
   for(let i = 0; i< numberOfTransfers; ++i) {
     if(i === intervalStartIndex) {
-      await sleep(1000)
       startTime = new Date()
-      await sleep(1000)
     }
     let result = await fetchJson(makeTransferToOmnibusUri ,makeTransferToOmnibusOption(sessionToken, {"amount":'1.0' + i,"description":"randomTest #"+i,"type":"user.toOrganization","subject":"system"}))
     if(i === intervalEndIndex) {
-      await sleep(1000)
       endTime = new Date()
-      await sleep(1000)
     }
   }
 }
@@ -119,8 +111,8 @@ describe("The core banking system proxy", function() {
         omnibusAccountId,
         {
           datePeriod: {
-            fromTime: startTime.toString(),
-            toTime: endTime.toString()
+            fromTime: startTime / 1000,
+            toTime: endTime / 1000
           }
         }
       )))
@@ -140,8 +132,8 @@ describe("The core banking system proxy", function() {
         omnibusAccountId,
         {
           datePeriod: {
-            fromTime: startTime.toString(),
-            toTime: endTime.toString()
+            fromTime: startTime / 1000,
+            toTime: endTime / 1000
           }
         }
       )))
@@ -153,8 +145,8 @@ describe("The core banking system proxy", function() {
         omnibusAccountId,
         {
           datePeriod: {
-            fromTime: startTime.toString(),
-            toTime: endTime.toString()
+            fromTime: startTime / 1000,
+            toTime: endTime / 1000
           },
           direction: 'debit'
         }
@@ -165,8 +157,8 @@ describe("The core banking system proxy", function() {
         omnibusAccountId,
         {
           datePeriod: {
-            fromTime: startTime.toString(),
-            toTime: endTime.toString()
+            fromTime: startTime / 1000,
+            toTime: endTime / 1000
           },
           direction: 'credit'
         }
