@@ -45,10 +45,14 @@ jobs:
               -d adharaprojects/cbs-proxy:temp-ci-test
 
       - run:
-          name: Test cyclos network
+          name: Wait for cyclos to be ready
           command: |
             # TODO: use some kind of netcat check to test if Cyclos is ready (it is VERY VERY slow to setup!)
             sleep 20
+
+      - run:
+          name: Test cyclos network
+          command: |
             docker exec cbs-proxy npm test -e API_SERVER_PORT=3033 -e CBS_SERVER_ADDRESS=http://localhost:4001
 
       - run:
