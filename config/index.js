@@ -1,5 +1,5 @@
 const fs = require('fs')
-const config = JSON.parse(fs.readFileSync('config.json', 'utf8'))
+const config = require('./config.json')
 
 module.exports = {
   apiServerPort: process.env.API_SERVER_PORT || config.apiServerPort,

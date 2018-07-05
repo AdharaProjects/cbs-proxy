@@ -2,7 +2,7 @@ const expect = require('chai').expect
 const assert = require('chai').assert
 const fetch = require('node-fetch')
 const queryString = require('query-string')
-const config = require('../config.js')
+const config = require('../config')
 
 const fetchJson = async (uri, options) => await (await fetch(uri, options)).json()
 const baseUrlProxy = 'http://localhost:' + config.apiServerPort
