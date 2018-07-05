@@ -1,7 +1,7 @@
 const express = require('express')
 const swaggerJSDoc = require('swagger-jsdoc')
 const cbs = require('./cbs')
-const config = require('./config.js')
+const config = require('./config')
 
 const app = express()
 

@@ -1,7 +1,7 @@
 const fetch = require('node-fetch')
 const queryString = require('query-string')
 
-const config = require('../config.js')
+const config = require('../config')
 
 async function getOmnibusAccount(sessionToken){
   const uri = config.cbsApiAddress + '/api/self/accounts/organization/data-for-history'

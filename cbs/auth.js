@@ -1,5 +1,5 @@
 const fetch = require('node-fetch')
-const config = require('../config.js')
+const config = require('../config')
 
 async function getAuth(username, password){
   const credentials = username+':'+password

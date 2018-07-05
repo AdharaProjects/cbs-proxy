@@ -1,7 +1,7 @@
 const fetch = require('node-fetch')
 const queryString = require('query-string')
 
-const config = require('../config.js')
+const config = require('../config')
 
 async function transfers(sessionToken, accountId, queryParameters) {
   const stringifiedParameters = queryString.stringify({...queryParameters})
