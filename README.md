@@ -1,4 +1,4 @@
-# cyclos_client
+# CBS-proxy
 
 ## Introduction
 
@@ -37,6 +37,6 @@ eg:
 docker run --name cbs-proxy \
   --network=host \
   -e API_SERVER_PORT=3033 \
-  -e CBS_SERVER_ADDRESS=http://localhost:4001 \
+  -e CBS_SERVER_ADDRESS=http://localhost:4000 \
   -d adharaprojects/cbs-proxy:0.0.0
 ```
