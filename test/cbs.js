@@ -4,6 +4,8 @@ const fetch = require('node-fetch')
 const queryString = require('query-string')
 const config = require('../config')
 
+const testConfig = require('./config')
+
 const fetchJson = async (uri, options) => await (await fetch(uri, options)).json()
 const baseUrlProxy = 'http://localhost:' + config.apiServerPort
 const baseUrlCBS = config.cbsApiAddress
@@ -15,11 +17,11 @@ const fetchOptionsTemplate = {
   }
 }
 const getAuthUri = baseUrlProxy + '/cbs/getAuth'
-const getAuthOptions = username => ({
+const getAuthOptions = (username, password) => ({
   ...fetchOptionsTemplate,
   body: JSON.stringify({
     username,
-    password: 'abcd'
+    password
   })
 })
 const getOmnibusAccountIdUri = baseUrlProxy + '/cbs/getOmnibusAccountId'
@@ -77,15 +79,12 @@ describe("The core banking system proxy", function() {
 
   let adminSessionToken
   let user1SessionToken
-  let user2SessionToken
 
   before (async () => {
-    adminSessionToken = (await fetchJson(getAuthUri, getAuthOptions('admin'))).sessionToken
-    user1SessionToken = (await fetchJson(getAuthUri, getAuthOptions('user1'))).sessionToken
-    user2SessionToken = (await fetchJson(getAuthUri, getAuthOptions('user2'))).sessionToken
+    adminSessionToken = (await fetchJson(getAuthUri, getAuthOptions(testConfig.cbsUnameAdmin, testConfig.cbsPasswordAdmin))).sessionToken
+    user1SessionToken = (await fetchJson(getAuthUri, getAuthOptions(testConfig.cbsUnameUser1, testConfig.cbsPasswordUser1))).sessionToken
     expect(adminSessionToken).to.be.a("string")
     expect(user1SessionToken).to.be.a("string")
-    expect(user2SessionToken).to.be.a("string")
 
     await makeRandomTransfersToOmnibusAccount(50, user1SessionToken, 2, 6)
   })
