@@ -22,8 +22,21 @@ npm install
 2. Start the proxy with `npm run`
 3. `npm test`
 
+Note: you should set the environment variables to suit your needs for the test, this includes setting ports, and passwords and usernames for Cyclos.
+
 ~OR~
 
 `circleci build` to run the CI tests locally.
 
 Note: tests are far from comprehensive, lots more testing should be done.
+
+### docker
+
+eg:
+```
+docker run --name cbs-proxy \
+  --network=host \
+  -e API_SERVER_PORT=3033 \
+  -e CBS_SERVER_ADDRESS=http://localhost:4001 \
+  -d adharaprojects/cbs-proxy:0.0.0
+```
