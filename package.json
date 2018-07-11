@@ -13,6 +13,7 @@
   },
   "devDependencies": {},
   "scripts": {
+    "start": "node server.js",
     "test": "./node_modules/.bin/mocha --exit --reporter spec test"
   },
   "repository": {
