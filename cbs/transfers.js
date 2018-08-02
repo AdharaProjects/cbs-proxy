@@ -36,5 +36,4 @@ async function transfers(sessionToken, accountId, queryParameters) {
 
 module.exports = {
   transfers,
-  config,
 }

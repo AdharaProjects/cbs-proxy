@@ -1,4 +1,5 @@
 function parseQueryParams(queryParams) {
+  if (!queryParams) return queryParams
   if (!queryParams.datePeriod) return queryParams
   const fromTimestamp = (!!queryParams.datePeriod.fromTime) ? new Date(queryParams.datePeriod.fromTime * 1000) : new Date(1)
   if (fromTimestamp.getTime() < 0) {

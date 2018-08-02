@@ -49,27 +49,42 @@ const transfersOption = (sessionToken, accountId, queryParameters) => ({
     queryParameters
   })
 })
-const makeTransferToOmnibusUri = baseUrlCBS + '/api/self/payments?fields=id&fields=authorizationStatus'
-const makeTransferToOmnibusOption = (sessionToken, transferDataBody) => ({
+
+const makeTransferToOmnibusUri = baseUrlProxy + '/cbs/transferToOmnibus'
+const makeTransferFromOmnibusUri = baseUrlProxy + '/cbs/transferFromOmnibus'
+const omnibusTransferOption = (transferDataBody) => ({
   ...fetchOptionsTemplate,
   headers: {
     ...fetchOptionsTemplate.headers,
-    'Session-Token': sessionToken,
   },
   body: JSON.stringify(transferDataBody)
 })
 
-let startTime
-let endTime
+let toOmnibusAccountStartTime
+let toOmnibusAccountEndTime
 // TODO: make these transfers random in value
 const makeRandomTransfersToOmnibusAccount = async (numberOfTransfers, sessionToken, intervalStartIndex, intervalEndIndex) => {
   for(let i = 0; i< numberOfTransfers; ++i) {
     if(i === intervalStartIndex) {
-      startTime = new Date()
+      toOmnibusAccountStartTime = new Date()
     }
-    let result = await fetchJson(makeTransferToOmnibusUri ,makeTransferToOmnibusOption(sessionToken, {"amount":'1.0' + i,"description":"randomTest #"+i,"type":"user.toOrganization","subject":"system"}))
+    let result = await fetchJson(makeTransferToOmnibusUri, omnibusTransferOption({amount:'1.0' + i, message:"randomTest #"+i, sessionToken}))
     if(i === intervalEndIndex) {
-      endTime = new Date()
+      toOmnibusAccountEndTime = new Date()
+    }
+  }
+}
+let fromOmnibusAccountStartTime
+let fromOmnibusAccountEndTime
+// TODO: make these transfers random in value
+const makeRandomTransfersFromOmnibusAccount = async (numberOfTransfers, sessionToken, accountId, intervalStartIndex, intervalEndIndex) => {
+  for(let i = 0; i< numberOfTransfers; ++i) {
+    if(i === intervalStartIndex) {
+      fromOmnibusAccountStartTime = new Date()
+    }
+    let result = await fetchJson(makeTransferFromOmnibusUri, omnibusTransferOption({amount:'1.0' + i, message:"randomTest #"+i, sessionToken, accountId}))
+    if(i === intervalEndIndex) {
+      fromOmnibusAccountEndTime = new Date()
     }
   }
 }
@@ -86,10 +101,20 @@ describe("The core banking system proxy", function() {
     expect(adminSessionToken).to.be.a("string")
     expect(user1SessionToken).to.be.a("string")
 
+//     // let result = await fetchJson(makeTransferToOmnibusUri, omnibusTransferOption({amount:'5.0', message:"TOTO", sessionToken: user1SessionToken}))
+//     console.log(testConfig.cbsAccountIdUser1)
+//     let result2 = await fetchJson(makeTransferFromOmnibusUri, omnibusTransferOption({amount:'4.1', message:"FROMFROM", sessionToken: adminSessionToken, accountId: testConfig.cbsAccountIdUser1}))
+// // {"amount":"1.00","description":"manualTest","type":"debit.toUser","subject":"-1648706091571700338"}
+// // curl -X 'http://localhost:3022/api/self/payments?fields=id&fields=authorizationStatus' -H 'Accept: application/json, text/plain, */*' -H 'Accept-Language: en-GB,en;q=0.5' --compressed -H 'Referer: http://localhost:3022/banking/payment' -H 'Channel: main' -H 'Session-Token: 11DaUGMFFKf3qxKBXdDcibLAu0vwPDD9' -H 'Content-Type: application/json' -H 'Connection: keep-alive' --data '{"amount":"1.00","description":"manualFromOmnibus","type":"organization.toUser","subject":"-1648706091571700338"}'
     await makeRandomTransfersToOmnibusAccount(50, user1SessionToken, 2, 6)
+    await makeRandomTransfersFromOmnibusAccount(50, adminSessionToken, testConfig.cbsAccountIdUser1, 2, 6)
   })
 
-  describe("Getting information about transactions to the Omnibus Account", async () => {
+  it("own test", async () => {
+      assert(true)
+  })
+
+  describe("Getting information about transactions TO the Omnibus Account", async () => {
     let omnibusAccountId
 
     before (async () => {
@@ -104,14 +129,15 @@ describe("The core banking system proxy", function() {
       assert(true)
     })
 
+
     it("should return a summary from within the time range when `queryParameters.datePeriod` are passed", async () => {
       const result = (await fetchJson(accountSummaryUri, accountSummaryOption(
         adminSessionToken,
         omnibusAccountId,
         {
           datePeriod: {
-            fromTime: startTime / 1000,
-            toTime: endTime / 1000
+            fromTime: toOmnibusAccountStartTime / 1000,
+            toTime: toOmnibusAccountEndTime / 1000
           }
         }
       )))
@@ -131,8 +157,8 @@ describe("The core banking system proxy", function() {
         omnibusAccountId,
         {
           datePeriod: {
-            fromTime: startTime / 1000,
-            toTime: endTime / 1000
+            fromTime: toOmnibusAccountStartTime / 1000,
+            toTime: toOmnibusAccountEndTime / 1000
           }
         }
       )))
@@ -144,8 +170,8 @@ describe("The core banking system proxy", function() {
         omnibusAccountId,
         {
           datePeriod: {
-            fromTime: startTime / 1000,
-            toTime: endTime / 1000
+            fromTime: toOmnibusAccountStartTime / 1000,
+            toTime: toOmnibusAccountEndTime / 1000
           },
           direction: 'debit'
         }
@@ -156,13 +182,91 @@ describe("The core banking system proxy", function() {
         omnibusAccountId,
         {
           datePeriod: {
-            fromTime: startTime / 1000,
-            toTime: endTime / 1000
+            fromTime: toOmnibusAccountStartTime / 1000,
+            toTime: toOmnibusAccountEndTime / 1000
           },
           direction: 'credit'
         }
       )))
       expect(creditResult.transfers.length).to.equal(5)
+    })
+  })
+  describe("Getting information about transactions FROM the Omnibus Account", async () => {
+    let omnibusAccountId
+
+    before (async () => {
+      omnibusAccountId = (await fetchJson(getOmnibusAccountIdUri, getOmnibusAccountIdOption(adminSessionToken))).omnibusAccountId
+      expect(omnibusAccountId).to.be.a("string")
+      expect(parseInt(omnibusAccountId)).to.be.a("number")
+    })
+
+    it("should return a summary of the users account", async () => {
+      const result = (await fetchJson(accountSummaryUri, accountSummaryOption(adminSessionToken, testConfig.cbsAccountIdUser1, {})))
+      // TODO:: Add meaningful tests
+      assert(true)
+    })
+
+
+    it("should return a summary from within the time range when `queryParameters.datePeriod` are passed", async () => {
+      const result = (await fetchJson(accountSummaryUri, accountSummaryOption(
+        adminSessionToken,
+        omnibusAccountId,
+        {
+          datePeriod: {
+            fromTime: fromOmnibusAccountStartTime / 1000,
+            toTime: fromOmnibusAccountEndTime / 1000
+          }
+        }
+      )))
+      console.log(result)
+      expect(result.status.incoming.count).to.equal(0)
+      expect(result.status.outgoing.count).to.equal(5)
+    })
+
+    it("should return all the transfers if no `queryParameters` are passed", async () => {
+      const result = (await fetchJson(transfersUri, transfersOption(adminSessionToken, omnibusAccountId, {})))
+      // TODO:: Add meaningful tests
+      assert(true)
+    })
+
+    it("should return transactions in time range when `queryParameters.datePeriod` are passed", async () => {
+      const result = (await fetchJson(transfersUri, transfersOption(
+        adminSessionToken,
+        omnibusAccountId,
+        {
+          datePeriod: {
+            fromTime: fromOmnibusAccountStartTime / 1000,
+            toTime: fromOmnibusAccountEndTime / 1000
+          }
+        }
+      )))
+      expect(result.transfers.length).to.equal(5)
+    })
+    it("should filter debit/credit transactions correctly transactions in time range when `queryParameters.datePeriod` are passed", async () => {
+      const debitResult = (await fetchJson(transfersUri, transfersOption(
+        adminSessionToken,
+        omnibusAccountId,
+        {
+          datePeriod: {
+            fromTime: fromOmnibusAccountStartTime / 1000,
+            toTime: fromOmnibusAccountEndTime / 1000
+          },
+          direction: 'debit'
+        }
+      )))
+      expect(debitResult.transfers.length).to.equal(5)
+      const creditResult = (await fetchJson(transfersUri, transfersOption(
+        adminSessionToken,
+        omnibusAccountId,
+        {
+          datePeriod: {
+            fromTime: fromOmnibusAccountStartTime / 1000,
+            toTime: fromOmnibusAccountEndTime / 1000
+          },
+          direction: 'credit'
+        }
+      )))
+      expect(creditResult.transfers.length).to.equal(0)
     })
   })
 })
