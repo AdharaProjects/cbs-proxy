@@ -1,4 +1,4 @@
 {
-  "apiServerPort": "3033",
+  "apiServerPort": "7000",
   "cbsApiAddress": "http://localhost:4000"
 }
