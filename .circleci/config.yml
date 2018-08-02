@@ -20,7 +20,7 @@ jobs:
               -e POSTGRES_DB=cyclos \
               -e POSTGRES_USER=cyclos \
               -e POSTGRES_PASSWORD=cyclospwd \
-              -d adharaprojects/cyclos:basic_0
+              -d adharaprojects/cyclos:cash_tokenizer_1
 
       - run:
           name: Start Cyclos
