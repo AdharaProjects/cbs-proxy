@@ -195,13 +195,6 @@ describe("The core banking system proxy", function() {
       expect(parseInt(omnibusAccountId)).to.be.a("number")
     })
 
-    it("should return a summary of the users account", async () => {
-      const result = (await fetchJson(accountSummaryUri, accountSummaryOption(adminSessionToken, testConfig.cbsAccountIdUser1, {})))
-      // TODO:: Add meaningful tests
-      assert(true)
-    })
-
-
     it("should return a summary from within the time range when `queryParameters.datePeriod` are passed", async () => {
       const result = (await fetchJson(accountSummaryUri, accountSummaryOption(
         adminSessionToken,
@@ -213,7 +206,6 @@ describe("The core banking system proxy", function() {
           }
         }
       )))
-      console.log(result)
       expect(result.status.incoming.count).to.equal(0)
       expect(result.status.outgoing.count).to.equal(5)
     })
