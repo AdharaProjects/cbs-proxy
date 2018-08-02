@@ -21,7 +21,7 @@ async function transfer(sessionToken, queryParameters) {
     const jsonBody = await response.json()
 
     return {
-      tranferId: jsonBody.id
+      transferId: jsonBody.id
     }
   } catch(err){
     return {
