@@ -19,7 +19,7 @@ async function transfer(sessionToken, queryParameters) {
     const response = await fetch(uri, options)
 
     const jsonBody = await response.json()
-
+    console.log('transfer', queryParameters, jsonBody)
     return {
       transferId: jsonBody.id
     }
