@@ -101,11 +101,6 @@ describe("The core banking system proxy", function() {
     expect(adminSessionToken).to.be.a("string")
     expect(user1SessionToken).to.be.a("string")
 
-//     // let result = await fetchJson(makeTransferToOmnibusUri, omnibusTransferOption({amount:'5.0', message:"TOTO", sessionToken: user1SessionToken}))
-//     console.log(testConfig.cbsAccountIdUser1)
-//     let result2 = await fetchJson(makeTransferFromOmnibusUri, omnibusTransferOption({amount:'4.1', message:"FROMFROM", sessionToken: adminSessionToken, accountId: testConfig.cbsAccountIdUser1}))
-// // {"amount":"1.00","description":"manualTest","type":"debit.toUser","subject":"-1648706091571700338"}
-// // curl -X 'http://localhost:3022/api/self/payments?fields=id&fields=authorizationStatus' -H 'Accept: application/json, text/plain, */*' -H 'Accept-Language: en-GB,en;q=0.5' --compressed -H 'Referer: http://localhost:3022/banking/payment' -H 'Channel: main' -H 'Session-Token: 11DaUGMFFKf3qxKBXdDcibLAu0vwPDD9' -H 'Content-Type: application/json' -H 'Connection: keep-alive' --data '{"amount":"1.00","description":"manualFromOmnibus","type":"organization.toUser","subject":"-1648706091571700338"}'
     await makeRandomTransfersToOmnibusAccount(50, user1SessionToken, 2, 6)
     await makeRandomTransfersFromOmnibusAccount(50, adminSessionToken, testConfig.cbsAccountIdUser1, 2, 6)
   })
