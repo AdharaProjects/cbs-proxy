@@ -15,8 +15,8 @@ async function getOmnibusAccount(sessionToken){
   try{
     const response = await (await fetch(uri, options)).json()
 
-    // console.log(JSON.stringify(response, null, 2))
-    return response.account.id
+    // If the user not the *admin* they will not be able to get the id type
+    return response.account ? response.account.id : response.entityType
   } catch(err){
     console.log('ERROR with calling /api/getOmnibusAccountId:', err)
     return {
