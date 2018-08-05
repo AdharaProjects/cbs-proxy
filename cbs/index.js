@@ -6,6 +6,7 @@ const helpers = require('./helpers.js')
 const auth = require('./auth.js')
 const accounts = require('./accounts.js')
 const transfers = require('./transfers.js')
+const transfer = require('./transfer.js')
 const checkParams = require('../util.js').checkParams
 
 router.use(bodyParser.urlencoded({extended: true}))
@@ -194,6 +195,99 @@ router.post('/transfers', async (req, res) =>{
   try{
     const queryParameters = helpers.parseQueryParams(req.body.queryParameters)
     const transfersResult = await transfers.transfers(req.body.sessionToken, req.body.accountId, queryParameters)
+    res.send(transfersResult)
+  } catch (err) {
+    console.error('Error calling the `auth.getAuth` function:', err)
+    res.send({
+      'error': 'ERROR while processing request. Please contact the system admin: '+err
+    })
+  }
+})
+
+/**
+ * @swagger
+ * /cbs/transferFromOmnibus:
+ *   post:
+ *     tags:
+ *       - transfers
+ *     description: Sends a transaction to the omnibus account
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: body
+ *         in: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             amount:
+ *               type: float
+ *               example: 102.56
+ *             message:
+ *               type: string
+ *               example: test message
+ *             sessionToken:
+ *               type: string
+ *               example: abcde
+ *             accountId:
+ *               type: string
+ *               example: 123456789
+ *     responses:
+ *       200: {
+ *         transactionId: the id of the resulting transaction
+ *       }
+ */
+router.post('/transferFromOmnibus', async (req, res) =>{
+  try{
+    const {amount, message, sessionToken, accountId} = req.body
+
+    const transferDetails = {amount: amount, description: message, type: 'organization.toUser', subject: accountId}
+    const transfersResult = await transfer.transfer(sessionToken, transferDetails)
+    res.send(transfersResult)
+  } catch (err) {
+    console.error('Error calling the `auth.getAuth` function:', err)
+    res.send({
+      'error': 'ERROR while processing request. Please contact the system admin: '+err
+    })
+  }
+})
+
+/**
+* @swagger
+* /cbs/transferToOmnibus:
+*   post:
+*     tags:
+*       - transfers
+*     description: Sends a transaction to the omnibus account
+*     produces:
+*       - application/json
+*     parameters:
+*       - name: body
+*         in: body
+*         required: true
+*         schema:
+*           type: object
+*           properties:
+*             amount:
+*               type: float
+*               example: 102.56
+*             message:
+*               type: string
+*               example: test message
+*             sessionToken:
+*               type: string
+*               example: abcde
+*     responses:
+*       200: {
+*         transactionId: the id of the resulting transaction
+*       }
+*/
+router.post('/transferToOmnibus', async (req, res) => {
+  try{
+    const {amount, message, sessionToken} = req.body
+
+    const transferDetails = {amount: amount, description: message, type: 'user.toOrganization', subject: 'system'}
+    const transfersResult = await transfer.transfer(sessionToken, transferDetails)
     res.send(transfersResult)
   } catch (err) {
     console.error('Error calling the `auth.getAuth` function:', err)

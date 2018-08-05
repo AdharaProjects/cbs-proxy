@@ -20,7 +20,7 @@ jobs:
               -e POSTGRES_DB=cyclos \
               -e POSTGRES_USER=cyclos \
               -e POSTGRES_PASSWORD=cyclospwd \
-              -d adharaprojects/cyclos:basic_0
+              -d adharaprojects/cyclos:cash_tokenizer_1
 
       - run:
           name: Start Cyclos
@@ -48,7 +48,7 @@ jobs:
           name: Wait for cyclos to be ready
           command: |
             # TODO: use some kind of netcat check to test if Cyclos is ready (it is VERY VERY slow to setup!)
-            sleep 20
+            sleep 30
 
       - run:
           name: Test cyclos network
