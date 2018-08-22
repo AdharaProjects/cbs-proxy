@@ -3,8 +3,8 @@ const queryString = require('query-string')
 
 const config = require('../config')
 
-async function getOmnibusAccount(sessionToken){
-  const uri = config.cbsApiAddress + '/api/self/accounts/organization/data-for-history'
+async function getPrimaryAccount(sessionToken){
+  const uri = config.cbsApiAddress + '/api/self/accounts/organization/data-for-history'//?fields=id'
   const options = {
     method: 'GET',
     headers: {
@@ -16,7 +16,14 @@ async function getOmnibusAccount(sessionToken){
     const response = await (await fetch(uri, options)).json()
 
     // If the user not the *admin* they will not be able to get the id type
-    return response.account ? response.account.id : response.entityType
+    if (!!response.account) {
+      return response.account.id
+      return response.account.id
+    } else {
+      const userUri = config.cbsApiAddress + '/api/self/accounts'//?fields=id'
+      const userResponse = await (await fetch(userUri, options)).json()
+      return userResponse
+    }
   } catch(err){
     console.log('ERROR with calling /api/getOmnibusAccountId:', err)
     return {
@@ -49,7 +56,7 @@ async function accountSummary(sessionToken, accountId, queryParameters) {
 }
 
 module.exports = {
-  getOmnibusAccount,
+  getPrimaryAccount,
   accountSummary,
   config,
 }

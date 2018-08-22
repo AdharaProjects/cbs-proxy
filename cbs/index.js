@@ -79,13 +79,13 @@ router.post('/getAuth', async (req, res) =>{
  *         description: Returns the id of the omnibus account
  *       }
  */
-router.post('/getOmnibusAccountId', async function(req, res){
+router.post('/getPrimaryAccountId', async function(req, res){
   try{
     const authCredentials = req.body
     await checkParams(authCredentials, ['sessionToken'])
-    const omnibusAccountId = await accounts.getOmnibusAccount(authCredentials.sessionToken)
+    const primaryAccountId = await accounts.getPrimaryAccount(authCredentials.sessionToken)
     res.send({
-      omnibusAccountId
+      primaryAccountId
     })
   } catch (err) {
     console.error('Error calling the `auth.getAuth` function:', err)
