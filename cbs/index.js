@@ -57,11 +57,11 @@ router.post('/getAuth', async (req, res) =>{
 
 /**
  * @swagger
- * /cbs/getOmnibusAccountId:
+ * /cbs/getPrimaryAccountId:
  *   post:
  *     tags:
- *       - getOmnibusAccountId
- *     description: Returns the highest block number on the node
+ *       - getPrimaryAccountId
+ *     description: Returns taccount id of the current users primary account
  *     produces:
  *       - application/json
  *     parameters:
@@ -76,7 +76,7 @@ router.post('/getAuth', async (req, res) =>{
  *               example: xxx123xxx456xxx
  *     responses:
  *       200: {
- *         description: Returns the id of the omnibus account
+ *         description: Returns the id of the users primary account
  *       }
  */
 router.post('/getPrimaryAccountId', async function(req, res){
