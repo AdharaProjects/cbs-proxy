@@ -18,14 +18,13 @@ async function getPrimaryAccount(sessionToken){
     // If the user not the *admin* they will not be able to get the id type
     if (!!response.account) {
       return response.account.id
-      return response.account.id
     } else {
       const userUri = config.cbsApiAddress + '/api/self/accounts'//?fields=id'
       const userResponse = await (await fetch(userUri, options)).json()
-      return userResponse
+      return userResponse[0].id
     }
   } catch(err){
-    console.log('ERROR with calling /api/getOmnibusAccountId:', err)
+    console.log('ERROR with calling /api/getPrimaryAccountId:', err)
     return {
       result: false
     }
