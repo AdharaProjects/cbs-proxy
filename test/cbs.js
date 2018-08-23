@@ -50,8 +50,8 @@ const transfersOption = (sessionToken, accountId, queryParameters) => ({
   })
 })
 
-const makeTransferToOmnibusUri = baseUrlProxy + '/cbs/transferToOmnibus'
-const makeTransferFromOmnibusUri = baseUrlProxy + '/cbs/transferFromOmnibus'
+const makeTransferToOmnibusUri = baseUrlProxy + '/cbs/transferToAdminPrimaryAccount'
+const makeTransferFromOmnibusUri = baseUrlProxy + '/cbs/transferFromAdminPrimaryAccount'
 const omnibusTransferOption = (transferDataBody) => ({
   ...fetchOptionsTemplate,
   headers: {

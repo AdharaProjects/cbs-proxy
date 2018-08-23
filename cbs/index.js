@@ -206,7 +206,7 @@ router.post('/transfers', async (req, res) =>{
 
 /**
  * @swagger
- * /cbs/transferFromOmnibus:
+ * /cbs/transferFromAdminPrimaryAccount:
  *   post:
  *     tags:
  *       - transfers
@@ -237,7 +237,7 @@ router.post('/transfers', async (req, res) =>{
  *         transactionId: the id of the resulting transaction
  *       }
  */
-router.post('/transferFromOmnibus', async (req, res) =>{
+router.post('/transferFromAdminPrimaryAccount', async (req, res) =>{
   try{
     const {amount, message, sessionToken, accountId} = req.body
 
@@ -254,7 +254,7 @@ router.post('/transferFromOmnibus', async (req, res) =>{
 
 /**
 * @swagger
-* /cbs/transferToOmnibus:
+* /cbs/transferToAdminPrimaryAccount:
 *   post:
 *     tags:
 *       - transfers
@@ -282,7 +282,7 @@ router.post('/transferFromOmnibus', async (req, res) =>{
 *         transactionId: the id of the resulting transaction
 *       }
 */
-router.post('/transferToOmnibus', async (req, res) => {
+router.post('/transferToAdminPrimaryAccount', async (req, res) => {
   try{
     const {amount, message, sessionToken} = req.body
 
