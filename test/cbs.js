@@ -60,31 +60,31 @@ const omnibusTransferOption = (transferDataBody) => ({
   body: JSON.stringify(transferDataBody)
 })
 
-let toOmnibusAccountStartTime
-let toOmnibusAccountEndTime
+let toAdminPrimaryAccountStartTime
+let toAdminPrimaryAccountEndTime
 // TODO: make these transfers random in value
-const makeRandomTransfersToOmnibusAccount = async (numberOfTransfers, sessionToken, intervalStartIndex, intervalEndIndex) => {
+const makeRandomTransfersToAdminPrimaryAccount = async (numberOfTransfers, sessionToken, intervalStartIndex, intervalEndIndex) => {
   for(let i = 0; i< numberOfTransfers; ++i) {
     if(i === intervalStartIndex) {
-      toOmnibusAccountStartTime = new Date()
+      toAdminPrimaryAccountStartTime = new Date()
     }
     let result = await fetchJson(makeTransferToOmnibusUri, omnibusTransferOption({amount:'1.0' + i, message:"randomTest #"+i, sessionToken}))
     if(i === intervalEndIndex) {
-      toOmnibusAccountEndTime = new Date()
+      toAdminPrimaryAccountEndTime = new Date()
     }
   }
 }
-let fromOmnibusAccountStartTime
-let fromOmnibusAccountEndTime
+let fromAdminPrimaryAccountStartTime
+let fromAdminPrimaryAccountEndTime
 // TODO: make these transfers random in value
-const makeRandomTransfersFromOmnibusAccount = async (numberOfTransfers, sessionToken, accountId, intervalStartIndex, intervalEndIndex) => {
+const makeRandomTransfersFromAdminPrimaryAccount = async (numberOfTransfers, sessionToken, accountId, intervalStartIndex, intervalEndIndex) => {
   for(let i = 0; i< numberOfTransfers; ++i) {
     if(i === intervalStartIndex) {
-      fromOmnibusAccountStartTime = new Date()
+      fromAdminPrimaryAccountStartTime = new Date()
     }
     let result = await fetchJson(makeTransferFromOmnibusUri, omnibusTransferOption({amount:'1.0' + i, message:"randomTest #"+i, sessionToken, accountId}))
     if(i === intervalEndIndex) {
-      fromOmnibusAccountEndTime = new Date()
+      fromAdminPrimaryAccountEndTime = new Date()
     }
   }
 }
@@ -101,8 +101,8 @@ describe("The core banking system proxy", function() {
     expect(adminSessionToken).to.be.a("string")
     expect(user1SessionToken).to.be.a("string")
 
-    await makeRandomTransfersToOmnibusAccount(50, user1SessionToken, 2, 6)
-    await makeRandomTransfersFromOmnibusAccount(50, adminSessionToken, testConfig.cbsAccountIdUser1, 2, 6)
+    await makeRandomTransfersToAdminPrimaryAccount(50, user1SessionToken, 2, 6)
+    await makeRandomTransfersFromAdminPrimaryAccount(50, adminSessionToken, testConfig.cbsAccountIdUser1, 2, 6)
   })
 
   it("own test", async () => {
@@ -136,8 +136,8 @@ describe("The core banking system proxy", function() {
         adminPrimaryAccountId,
         {
           datePeriod: {
-            fromTime: toOmnibusAccountStartTime / 1000,
-            toTime: toOmnibusAccountEndTime / 1000
+            fromTime: toAdminPrimaryAccountStartTime / 1000,
+            toTime: toAdminPrimaryAccountEndTime / 1000
           }
         }
       )))
@@ -150,8 +150,8 @@ describe("The core banking system proxy", function() {
         userAccountId,
         {
           datePeriod: {
-            fromTime: toOmnibusAccountStartTime / 1000,
-            toTime: toOmnibusAccountEndTime / 1000
+            fromTime: toAdminPrimaryAccountStartTime / 1000,
+            toTime: toAdminPrimaryAccountEndTime / 1000
           }
         }
       )))
@@ -171,8 +171,8 @@ describe("The core banking system proxy", function() {
         adminPrimaryAccountId,
         {
           datePeriod: {
-            fromTime: toOmnibusAccountStartTime / 1000,
-            toTime: toOmnibusAccountEndTime / 1000
+            fromTime: toAdminPrimaryAccountStartTime / 1000,
+            toTime: toAdminPrimaryAccountEndTime / 1000
           }
         }
       )))
@@ -185,8 +185,8 @@ describe("The core banking system proxy", function() {
         userAccountId,
         {
           datePeriod: {
-            fromTime: toOmnibusAccountStartTime / 1000,
-            toTime: toOmnibusAccountEndTime / 1000
+            fromTime: toAdminPrimaryAccountStartTime / 1000,
+            toTime: toAdminPrimaryAccountEndTime / 1000
           }
         }
       )))
@@ -199,8 +199,8 @@ describe("The core banking system proxy", function() {
         adminPrimaryAccountId,
         {
           datePeriod: {
-            fromTime: toOmnibusAccountStartTime / 1000,
-            toTime: toOmnibusAccountEndTime / 1000
+            fromTime: toAdminPrimaryAccountStartTime / 1000,
+            toTime: toAdminPrimaryAccountEndTime / 1000
           },
           direction: 'debit'
         }
@@ -211,8 +211,8 @@ describe("The core banking system proxy", function() {
         adminPrimaryAccountId,
         {
           datePeriod: {
-            fromTime: toOmnibusAccountStartTime / 1000,
-            toTime: toOmnibusAccountEndTime / 1000
+            fromTime: toAdminPrimaryAccountStartTime / 1000,
+            toTime: toAdminPrimaryAccountEndTime / 1000
           },
           direction: 'credit'
         }
@@ -225,8 +225,8 @@ describe("The core banking system proxy", function() {
         userAccountId,
         {
           datePeriod: {
-            fromTime: toOmnibusAccountStartTime / 1000,
-            toTime: toOmnibusAccountEndTime / 1000
+            fromTime: toAdminPrimaryAccountStartTime / 1000,
+            toTime: toAdminPrimaryAccountEndTime / 1000
           },
           direction: 'debit'
         }
@@ -237,8 +237,8 @@ describe("The core banking system proxy", function() {
         userAccountId,
         {
           datePeriod: {
-            fromTime: toOmnibusAccountStartTime / 1000,
-            toTime: toOmnibusAccountEndTime / 1000
+            fromTime: toAdminPrimaryAccountStartTime / 1000,
+            toTime: toAdminPrimaryAccountEndTime / 1000
           },
           direction: 'credit'
         }
@@ -266,8 +266,8 @@ describe("The core banking system proxy", function() {
         adminPrimaryAccountId,
         {
           datePeriod: {
-            fromTime: fromOmnibusAccountStartTime / 1000,
-            toTime: fromOmnibusAccountEndTime / 1000
+            fromTime: fromAdminPrimaryAccountStartTime / 1000,
+            toTime: fromAdminPrimaryAccountEndTime / 1000
           }
         }
       )))
@@ -280,8 +280,8 @@ describe("The core banking system proxy", function() {
         userAccountId,
         {
           datePeriod: {
-            fromTime: fromOmnibusAccountStartTime / 1000,
-            toTime: fromOmnibusAccountEndTime / 1000
+            fromTime: fromAdminPrimaryAccountStartTime / 1000,
+            toTime: fromAdminPrimaryAccountEndTime / 1000
           }
         }
       )))
@@ -301,8 +301,8 @@ describe("The core banking system proxy", function() {
         adminPrimaryAccountId,
         {
           datePeriod: {
-            fromTime: fromOmnibusAccountStartTime / 1000,
-            toTime: fromOmnibusAccountEndTime / 1000
+            fromTime: fromAdminPrimaryAccountStartTime / 1000,
+            toTime: fromAdminPrimaryAccountEndTime / 1000
           }
         }
       )))
@@ -314,8 +314,8 @@ describe("The core banking system proxy", function() {
         userAccountId,
         {
           datePeriod: {
-            fromTime: fromOmnibusAccountStartTime / 1000,
-            toTime: fromOmnibusAccountEndTime / 1000
+            fromTime: fromAdminPrimaryAccountStartTime / 1000,
+            toTime: fromAdminPrimaryAccountEndTime / 1000
           }
         }
       )))
@@ -327,8 +327,8 @@ describe("The core banking system proxy", function() {
         adminPrimaryAccountId,
         {
           datePeriod: {
-            fromTime: fromOmnibusAccountStartTime / 1000,
-            toTime: fromOmnibusAccountEndTime / 1000
+            fromTime: fromAdminPrimaryAccountStartTime / 1000,
+            toTime: fromAdminPrimaryAccountEndTime / 1000
           },
           direction: 'debit'
         }
@@ -339,8 +339,8 @@ describe("The core banking system proxy", function() {
         adminPrimaryAccountId,
         {
           datePeriod: {
-            fromTime: fromOmnibusAccountStartTime / 1000,
-            toTime: fromOmnibusAccountEndTime / 1000
+            fromTime: fromAdminPrimaryAccountStartTime / 1000,
+            toTime: fromAdminPrimaryAccountEndTime / 1000
           },
           direction: 'credit'
         }
@@ -353,8 +353,8 @@ describe("The core banking system proxy", function() {
         userAccountId,
         {
           datePeriod: {
-            fromTime: fromOmnibusAccountStartTime / 1000,
-            toTime: fromOmnibusAccountEndTime / 1000
+            fromTime: fromAdminPrimaryAccountStartTime / 1000,
+            toTime: fromAdminPrimaryAccountEndTime / 1000
           },
           direction: 'debit'
         }
@@ -365,8 +365,8 @@ describe("The core banking system proxy", function() {
         userAccountId,
         {
           datePeriod: {
-            fromTime: fromOmnibusAccountStartTime / 1000,
-            toTime: fromOmnibusAccountEndTime / 1000
+            fromTime: fromAdminPrimaryAccountStartTime / 1000,
+            toTime: fromAdminPrimaryAccountEndTime / 1000
           },
           direction: 'credit'
         }
