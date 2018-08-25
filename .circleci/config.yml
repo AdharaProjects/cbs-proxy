@@ -48,7 +48,7 @@ jobs:
           name: Wait for cyclos to be ready
           command: |
             # TODO: use some kind of netcat check to test if Cyclos is ready (it is VERY VERY slow to setup!)
-            sleep 30
+            sleep 40
 
       - run:
           name: Test cyclos network
