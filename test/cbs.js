@@ -105,10 +105,6 @@ describe("The core banking system proxy", function() {
     await makeRandomTransfersFromAdminPrimaryAccount(50, adminSessionToken, testConfig.cbsAccountIdUser1, 2, 6)
   })
 
-  it("own test", async () => {
-      assert(true)
-  })
-
   describe("Getting information about transactions TO the Omnibus Account", async () => {
     let adminPrimaryAccountId
     let userAccountId
