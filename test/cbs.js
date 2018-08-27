@@ -50,9 +50,9 @@ const transfersOption = (sessionToken, accountId, queryParameters) => ({
   })
 })
 
-const makeTransferToOmnibusUri = baseUrlProxy + '/cbs/transferToAdminPrimaryAccount'
-const makeTransferFromOmnibusUri = baseUrlProxy + '/cbs/transferFromAdminPrimaryAccount'
-const omnibusTransferOption = (transferDataBody) => ({
+const makeTransferToAdminPrimaryUri = baseUrlProxy + '/cbs/transferToAdminPrimaryAccount'
+const makeTransferFromAdminPrimaryUri = baseUrlProxy + '/cbs/transferFromAdminPrimaryAccount'
+const adminPrimaryTransferOption = (transferDataBody) => ({
   ...fetchOptionsTemplate,
   headers: {
     ...fetchOptionsTemplate.headers,
@@ -68,7 +68,7 @@ const makeRandomTransfersToAdminPrimaryAccount = async (numberOfTransfers, sessi
     if(i === intervalStartIndex) {
       toAdminPrimaryAccountStartTime = new Date()
     }
-    let result = await fetchJson(makeTransferToOmnibusUri, omnibusTransferOption({amount:'1.0' + i, message:"randomTest #"+i, sessionToken}))
+    let result = await fetchJson(makeTransferToAdminPrimaryUri, adminPrimaryTransferOption({amount:'1.0' + i, message:"randomTest #"+i, sessionToken}))
     if(i === intervalEndIndex) {
       toAdminPrimaryAccountEndTime = new Date()
     }
@@ -82,7 +82,7 @@ const makeRandomTransfersFromAdminPrimaryAccount = async (numberOfTransfers, ses
     if(i === intervalStartIndex) {
       fromAdminPrimaryAccountStartTime = new Date()
     }
-    let result = await fetchJson(makeTransferFromOmnibusUri, omnibusTransferOption({amount:'1.0' + i, message:"randomTest #"+i, sessionToken, accountId}))
+    let result = await fetchJson(makeTransferFromAdminPrimaryUri, adminPrimaryTransferOption({amount:'1.0' + i, message:"randomTest #"+i, sessionToken, accountId}))
     if(i === intervalEndIndex) {
       fromAdminPrimaryAccountEndTime = new Date()
     }
@@ -105,7 +105,7 @@ describe("The core banking system proxy", function() {
     await makeRandomTransfersFromAdminPrimaryAccount(50, adminSessionToken, testConfig.cbsAccountIdUser1, 2, 6)
   })
 
-  describe("Getting information about transactions TO the Omnibus Account", async () => {
+  describe("Getting information about transactions TO the Admin's Primary Account", async () => {
     let adminPrimaryAccountId
     let userAccountId
 
@@ -126,7 +126,7 @@ describe("The core banking system proxy", function() {
     })
 
 
-    it("should return a summary for Admin from within the time range when `queryParameters.datePeriod` are passed", async () => {
+    it("should return a summary for Admin from within the time range when `queryParameters.datePeriod` are provided", async () => {
       const result = (await fetchJson(accountSummaryUri, accountSummaryOption(
         adminSessionToken,
         adminPrimaryAccountId,
@@ -140,7 +140,7 @@ describe("The core banking system proxy", function() {
       expect(result.status.incoming.count).to.equal(5)
       expect(result.status.outgoing.count).to.equal(0)
     })
-    it("should return a summary for User from within the time range when `queryParameters.datePeriod` are passed", async () => {
+    it("should return a summary for User from within the time range when `queryParameters.datePeriod` are provided", async () => {
       const result = (await fetchJson(accountSummaryUri, accountSummaryOption(
         user1SessionToken,
         userAccountId,
@@ -155,13 +155,13 @@ describe("The core banking system proxy", function() {
       expect(result.status.outgoing.count).to.equal(5)
     })
 
-    it("should return all the transfers if no `queryParameters` are passed", async () => {
+    it("should return all the transfers if no `queryParameters` are provided", async () => {
       const result = (await fetchJson(transfersUri, transfersOption(adminSessionToken, adminPrimaryAccountId, {})))
       // TODO:: Add meaningful tests
       assert(true)
     })
 
-    it("should return admin transactions in time range when `queryParameters.datePeriod` are passed", async () => {
+    it("should return admin transactions in time range when `queryParameters.datePeriod` are provided", async () => {
       const adminTransferList = (await fetchJson(transfersUri, transfersOption(
         adminSessionToken,
         adminPrimaryAccountId,
@@ -175,7 +175,7 @@ describe("The core banking system proxy", function() {
       expect(adminTransferList.transfers.length).to.equal(5)
     })
 
-    it("should return users transactions in time range when `queryParameters.datePeriod` are passed", async () => {
+    it("should return users transactions in time range when `queryParameters.datePeriod` are provided", async () => {
       const userTransferList = (await fetchJson(transfersUri, transfersOption(
         user1SessionToken,
         userAccountId,
@@ -189,7 +189,7 @@ describe("The core banking system proxy", function() {
       expect(userTransferList.transfers.length).to.equal(5)
     })
 
-    it("should filter admin debit/credit transactions correctly transactions in time range when `queryParameters.datePeriod` are passed", async () => {
+    it("should filter admin debit/credit transactions correctly transactions in time range when `queryParameters.datePeriod` are provided", async () => {
       const debitResult = (await fetchJson(transfersUri, transfersOption(
         adminSessionToken,
         adminPrimaryAccountId,
@@ -215,7 +215,7 @@ describe("The core banking system proxy", function() {
       )))
       expect(creditResult.transfers.length).to.equal(5)
     })
-    it("should filter users debit/credit transactions correctly transactions in time range when `queryParameters.datePeriod` are passed", async () => {
+    it("should filter users debit/credit transactions correctly transactions in time range when `queryParameters.datePeriod` are provided", async () => {
       const debitResult = (await fetchJson(transfersUri, transfersOption(
         user1SessionToken,
         userAccountId,
@@ -242,7 +242,7 @@ describe("The core banking system proxy", function() {
       expect(creditResult.transfers.length).to.equal(0)
     })
   })
-  describe("Getting information about transactions FROM the Omnibus Account", async () => {
+  describe("Getting information about transactions FROM the Admin's Primary Account", async () => {
     let adminPrimaryAccountId
     let userAccountId
 
@@ -256,7 +256,7 @@ describe("The core banking system proxy", function() {
       expect(parseInt(userAccountId)).to.be.a("number")
     })
 
-    it("should return a summary for admin account from within the time range when `queryParameters.datePeriod` are passed", async () => {
+    it("should return a summary for admin account from within the time range when `queryParameters.datePeriod` are provided", async () => {
       const result = (await fetchJson(accountSummaryUri, accountSummaryOption(
         adminSessionToken,
         adminPrimaryAccountId,
@@ -270,7 +270,7 @@ describe("The core banking system proxy", function() {
       expect(result.status.incoming.count).to.equal(0)
       expect(result.status.outgoing.count).to.equal(5)
     })
-    it("should return a summary for user account from within the time range when `queryParameters.datePeriod` are passed", async () => {
+    it("should return a summary for user account from within the time range when `queryParameters.datePeriod` are provided", async () => {
       const result = (await fetchJson(accountSummaryUri, accountSummaryOption(
         user1SessionToken,
         userAccountId,
@@ -285,13 +285,13 @@ describe("The core banking system proxy", function() {
       expect(result.status.outgoing.count).to.equal(0)
     })
 
-    it("should return all the transfers if no `queryParameters` are passed", async () => {
+    it("should return all the transfers if no `queryParameters` are provided", async () => {
       const result = (await fetchJson(transfersUri, transfersOption(adminSessionToken, adminPrimaryAccountId, {})))
       // TODO:: Add meaningful tests
       assert(true)
     })
 
-    it("should return transactions in time range when `queryParameters.datePeriod` are passed", async () => {
+    it("should return transactions in time range when `queryParameters.datePeriod` are provided", async () => {
       const result = (await fetchJson(transfersUri, transfersOption(
         adminSessionToken,
         adminPrimaryAccountId,
@@ -304,7 +304,7 @@ describe("The core banking system proxy", function() {
       )))
       expect(result.transfers.length).to.equal(5)
     })
-    it("should return users transactions in time range when `queryParameters.datePeriod` are passed", async () => {
+    it("should return users transactions in time range when `queryParameters.datePeriod` are provided", async () => {
       const userTransferList = (await fetchJson(transfersUri, transfersOption(
         user1SessionToken,
         userAccountId,
@@ -317,7 +317,7 @@ describe("The core banking system proxy", function() {
       )))
       expect(userTransferList.transfers.length).to.equal(5)
     })
-    it("should filter admin debit/credit transactions correctly transactions in time range when `queryParameters.datePeriod` are passed", async () => {
+    it("should filter admin debit/credit transactions correctly transactions in time range when `queryParameters.datePeriod` are provided", async () => {
       const debitResult = (await fetchJson(transfersUri, transfersOption(
         adminSessionToken,
         adminPrimaryAccountId,
@@ -343,7 +343,7 @@ describe("The core banking system proxy", function() {
       )))
       expect(creditResult.transfers.length).to.equal(0)
     })
-    it("should filter user debit/credit transactions correctly transactions in time range when `queryParameters.datePeriod` are passed", async () => {
+    it("should filter user debit/credit transactions correctly transactions in time range when `queryParameters.datePeriod` are provided", async () => {
       const debitResult = (await fetchJson(transfersUri, transfersOption(
         user1SessionToken,
         userAccountId,

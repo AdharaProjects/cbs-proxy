@@ -61,7 +61,7 @@ router.post('/getAuth', async (req, res) =>{
  *   post:
  *     tags:
  *       - getPrimaryAccountId
- *     description: Returns taccount id of the current users primary account
+ *     description: Returns taccount id of the current user's primary account
  *     produces:
  *       - application/json
  *     parameters:
@@ -76,7 +76,7 @@ router.post('/getAuth', async (req, res) =>{
  *               example: xxx123xxx456xxx
  *     responses:
  *       200: {
- *         description: Returns the id of the users primary account
+ *         description: Returns the id of the user's primary account
  *       }
  */
 router.post('/getPrimaryAccountId', async function(req, res){
@@ -210,7 +210,7 @@ router.post('/transfers', async (req, res) =>{
  *   post:
  *     tags:
  *       - transfers
- *     description: Sends a transaction to the omnibus account
+ *     description: Sends a transaction to the admin's primary account (this account can be considered the Omnibus account depending on use case)
  *     produces:
  *       - application/json
  *     parameters:
@@ -258,7 +258,7 @@ router.post('/transferFromAdminPrimaryAccount', async (req, res) =>{
 *   post:
 *     tags:
 *       - transfers
-*     description: Sends a transaction to the omnibus account
+*     description: Sends a transaction to the admin's primary account (this account can be considered the Omnibus account depending on use case)
 *     produces:
 *       - application/json
 *     parameters:
