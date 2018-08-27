@@ -57,11 +57,11 @@ router.post('/getAuth', async (req, res) =>{
 
 /**
  * @swagger
- * /cbs/getOmnibusAccountId:
+ * /cbs/getPrimaryAccountId:
  *   post:
  *     tags:
- *       - getOmnibusAccountId
- *     description: Returns the highest block number on the node
+ *       - getPrimaryAccountId
+ *     description: Returns taccount id of the current user's primary account
  *     produces:
  *       - application/json
  *     parameters:
@@ -76,16 +76,16 @@ router.post('/getAuth', async (req, res) =>{
  *               example: xxx123xxx456xxx
  *     responses:
  *       200: {
- *         description: Returns the id of the omnibus account
+ *         description: Returns the id of the user's primary account
  *       }
  */
-router.post('/getOmnibusAccountId', async function(req, res){
+router.post('/getPrimaryAccountId', async function(req, res){
   try{
     const authCredentials = req.body
     await checkParams(authCredentials, ['sessionToken'])
-    const omnibusAccountId = await accounts.getOmnibusAccount(authCredentials.sessionToken)
+    const primaryAccountId = await accounts.getPrimaryAccount(authCredentials.sessionToken)
     res.send({
-      omnibusAccountId
+      primaryAccountId
     })
   } catch (err) {
     console.error('Error calling the `auth.getAuth` function:', err)
@@ -206,11 +206,11 @@ router.post('/transfers', async (req, res) =>{
 
 /**
  * @swagger
- * /cbs/transferFromOmnibus:
+ * /cbs/transferFromAdminPrimaryAccount:
  *   post:
  *     tags:
  *       - transfers
- *     description: Sends a transaction to the omnibus account
+ *     description: Sends a transaction to the admin's primary account (this account can be considered the Omnibus account depending on use case)
  *     produces:
  *       - application/json
  *     parameters:
@@ -237,7 +237,7 @@ router.post('/transfers', async (req, res) =>{
  *         transactionId: the id of the resulting transaction
  *       }
  */
-router.post('/transferFromOmnibus', async (req, res) =>{
+router.post('/transferFromAdminPrimaryAccount', async (req, res) =>{
   try{
     const {amount, message, sessionToken, accountId} = req.body
 
@@ -254,11 +254,11 @@ router.post('/transferFromOmnibus', async (req, res) =>{
 
 /**
 * @swagger
-* /cbs/transferToOmnibus:
+* /cbs/transferToAdminPrimaryAccount:
 *   post:
 *     tags:
 *       - transfers
-*     description: Sends a transaction to the omnibus account
+*     description: Sends a transaction to the admin's primary account (this account can be considered the Omnibus account depending on use case)
 *     produces:
 *       - application/json
 *     parameters:
@@ -282,7 +282,7 @@ router.post('/transferFromOmnibus', async (req, res) =>{
 *         transactionId: the id of the resulting transaction
 *       }
 */
-router.post('/transferToOmnibus', async (req, res) => {
+router.post('/transferToAdminPrimaryAccount', async (req, res) => {
   try{
     const {amount, message, sessionToken} = req.body
 
