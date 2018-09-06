@@ -31,6 +31,27 @@ async function getPrimaryAccount(sessionToken){
   }
 }
 
+async function getAccount(sessionToken) {
+  const uri = config.cbsApiAddress + '/api/self/accounts'
+  const options = {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Session-Token': sessionToken
+    }
+  }
+  try {
+    const response = await (await fetch(uri, options)).json()
+
+    return response
+  } catch(err) {
+    console.log('ERROR with calling /cbs/getAccount:', err)
+    return {
+      result: false
+    }
+  }
+}
+
 // TODO: Add query parameters
 async function accountSummary(sessionToken, accountId, queryParameters) {
   const stringifiedParameters = queryString.stringify({...queryParameters})
@@ -56,6 +77,7 @@ async function accountSummary(sessionToken, accountId, queryParameters) {
 
 module.exports = {
   getPrimaryAccount,
+  getAccount,
   accountSummary,
   config,
 }

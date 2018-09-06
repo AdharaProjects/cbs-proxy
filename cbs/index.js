@@ -81,12 +81,47 @@ router.post('/getAuth', async (req, res) =>{
  */
 router.post('/getPrimaryAccountId', async function(req, res){
   try{
-    const authCredentials = req.body
-    await checkParams(authCredentials, ['sessionToken'])
-    const primaryAccountId = await accounts.getPrimaryAccount(authCredentials.sessionToken)
+    await checkParams(req.body, ['sessionToken'])
+    const primaryAccountId = await accounts.getPrimaryAccount(req.body.sessionToken)
     res.send({
       primaryAccountId
     })
+  } catch (err) {
+    console.error('Error calling the `auth.getAuth` function:', err)
+    res.send({
+      'error': 'ERROR while processing request. Please contact the system admin: '+err
+    })
+  }
+})
+
+/**
+ * @swagger
+ * /cbs/getAccount:
+ *   post:
+ *     tags:
+ *       - getPrimaryAccountId
+ *     description: Returns accounts of the user
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: body
+ *         in: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             sessionToken:
+ *               type: string
+ *               example: xxx123xxx456xxx
+ *     responses:
+ *       200: {
+ *         description: Returns the id of the user's primary account
+ *       }
+ */
+router.post('/account', async (req, res) =>{
+  try{
+    const account = await accounts.getAccount(req.body.sessionToken)
+    res.send(account)
   } catch (err) {
     console.error('Error calling the `auth.getAuth` function:', err)
     res.send({
