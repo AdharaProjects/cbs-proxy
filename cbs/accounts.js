@@ -1,5 +1,6 @@
 const fetch = require('node-fetch')
 const queryString = require('query-string')
+const SSEChannel = require('sse-pubsub')
 
 const config = require('../config')
 
@@ -75,9 +76,25 @@ async function accountSummary(sessionToken, accountId, queryParameters) {
   }
 }
 
+async function watchForCbsBalanceChanges(channel, sessionToken) {
+  const accountDetails = await getAccountsList(sessionToken)
+
+  channel.publish(accountDetails, 'accountDetails')
+
+  setTimeout(() => watchForCbsBalanceChanges(channel, sessionToken), 1500)
+}
+
+function accountSummarySSE(req, res) {
+  const uniqueChannel = new SSEChannel();
+  uniqueChannel.subscribe(req, res)
+
+  watchForCbsBalanceChanges(uniqueChannel, req.query.sessionToken)
+}
+
 module.exports = {
   getPrimaryAccount,
   getAccountsList,
   accountSummary,
+  accountSummarySSE,
   config,
 }
