@@ -96,10 +96,10 @@ router.post('/getPrimaryAccountId', async function(req, res){
 
 /**
  * @swagger
- * /cbs/getAccount:
+ * /cbs/getAccountsList:
  *   post:
  *     tags:
- *       - getPrimaryAccountId
+ *       - accountSummary
  *     description: Returns accounts of the user
  *     produces:
  *       - application/json
@@ -118,12 +118,12 @@ router.post('/getPrimaryAccountId', async function(req, res){
  *         description: Returns the id of the user's primary account
  *       }
  */
-router.post('/account', async (req, res) =>{
+router.post('/getAccountsList', async (req, res) =>{
   try{
-    const account = await accounts.getAccount(req.body.sessionToken)
+    const account = await accounts.getAccountsList(req.body.sessionToken)
     res.send(account)
   } catch (err) {
-    console.error('Error calling the `auth.getAuth` function:', err)
+    console.error('Error calling the `accounts.getAccountsList` function:', err)
     res.send({
       'error': 'ERROR while processing request. Please contact the system admin: '+err
     })

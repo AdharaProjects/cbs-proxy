@@ -31,7 +31,7 @@ async function getPrimaryAccount(sessionToken){
   }
 }
 
-async function getAccount(sessionToken) {
+async function getAccountsList(sessionToken) {
   const uri = config.cbsApiAddress + '/api/self/accounts'
   const options = {
     method: 'GET',
@@ -45,7 +45,7 @@ async function getAccount(sessionToken) {
 
     return response
   } catch(err) {
-    console.log('ERROR with calling /cbs/getAccount:', err)
+    console.log('ERROR with calling /api/self/accounts:', err)
     return {
       result: false
     }
@@ -77,7 +77,7 @@ async function accountSummary(sessionToken, accountId, queryParameters) {
 
 module.exports = {
   getPrimaryAccount,
-  getAccount,
+  getAccountsList,
   accountSummary,
   config,
 }
