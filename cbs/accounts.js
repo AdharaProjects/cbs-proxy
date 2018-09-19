@@ -1,5 +1,6 @@
 const fetch = require('node-fetch')
 const queryString = require('query-string')
+const SSEChannel = require('sse-pubsub')
 
 const config = require('../config')
 
@@ -31,6 +32,27 @@ async function getPrimaryAccount(sessionToken){
   }
 }
 
+async function getAccountsList(sessionToken) {
+  const uri = config.cbsApiAddress + '/api/self/accounts'
+  const options = {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Session-Token': sessionToken
+    }
+  }
+  try {
+    const response = await (await fetch(uri, options)).json()
+
+    return response
+  } catch(err) {
+    console.log('ERROR with calling /api/self/accounts:', err)
+    return {
+      result: false
+    }
+  }
+}
+
 // TODO: Add query parameters
 async function accountSummary(sessionToken, accountId, queryParameters) {
   const stringifiedParameters = queryString.stringify({...queryParameters})
@@ -54,8 +76,25 @@ async function accountSummary(sessionToken, accountId, queryParameters) {
   }
 }
 
+async function watchForCbsBalanceChanges(channel, sessionToken) {
+  const accountDetails = await getAccountsList(sessionToken)
+
+  channel.publish(accountDetails, 'accountDetails')
+
+  setTimeout(() => watchForCbsBalanceChanges(channel, sessionToken), 1500)
+}
+
+function accountSummarySSE(req, res) {
+  const uniqueChannel = new SSEChannel();
+  uniqueChannel.subscribe(req, res)
+
+  watchForCbsBalanceChanges(uniqueChannel, req.query.sessionToken)
+}
+
 module.exports = {
   getPrimaryAccount,
+  getAccountsList,
   accountSummary,
+  accountSummarySSE,
   config,
 }

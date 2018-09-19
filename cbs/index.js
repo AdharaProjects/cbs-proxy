@@ -81,14 +81,49 @@ router.post('/getAuth', async (req, res) =>{
  */
 router.post('/getPrimaryAccountId', async function(req, res){
   try{
-    const authCredentials = req.body
-    await checkParams(authCredentials, ['sessionToken'])
-    const primaryAccountId = await accounts.getPrimaryAccount(authCredentials.sessionToken)
+    await checkParams(req.body, ['sessionToken'])
+    const primaryAccountId = await accounts.getPrimaryAccount(req.body.sessionToken)
     res.send({
       primaryAccountId
     })
   } catch (err) {
     console.error('Error calling the `auth.getAuth` function:', err)
+    res.send({
+      'error': 'ERROR while processing request. Please contact the system admin: '+err
+    })
+  }
+})
+
+/**
+ * @swagger
+ * /cbs/getAccountsList:
+ *   post:
+ *     tags:
+ *       - accountSummary
+ *     description: Returns accounts of the user
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: body
+ *         in: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             sessionToken:
+ *               type: string
+ *               example: xxx123xxx456xxx
+ *     responses:
+ *       200: {
+ *         description: Returns the id of the user's primary account
+ *       }
+ */
+router.post('/getAccountsList', async (req, res) => {
+  try{
+    const account = await accounts.getAccountsList(req.body.sessionToken)
+    res.send(account)
+  } catch (err) {
+    console.error('Error calling the `accounts.getAccountsList` function:', err)
     res.send({
       'error': 'ERROR while processing request. Please contact the system admin: '+err
     })
@@ -146,6 +181,43 @@ router.post('/accountSummary', async (req, res) =>{
     res.send({
       'error': 'ERROR while processing request. Please contact the system admin: '+err
     })
+  }
+})
+
+/**
+ * @swagger
+ * /web3sse/subscribeToAccountDetails:
+ *   get:
+ *     tags:
+ *       - accountSummary
+ *     description: Subscribes to account updates
+ *     produces:
+ *       - text/event-stream
+ *       - application/json
+ *     parameters:
+ *       - sessionToken: string
+ *         description: the logged in user's session token
+ *         in: path
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200: {
+ *         description: Subscribes to account updates,
+ *         x-produces: text/event-stream,
+ *         headers: {
+ *           Content-Type: {
+ *             type: string,
+ *             enum: text/event-stream
+ *           }
+ *         }
+ *       }
+ */
+
+router.get('/subscribeToAccountDetails', function(req, res){
+  try {
+    accounts.accountSummarySSE(req, res)
+  } catch(err){
+    console.log('ERROR with subscribeToAccountDetails', err)
   }
 })
 
