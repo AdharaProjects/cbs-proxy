@@ -18,7 +18,6 @@ async function getPrimaryAccount(sessionToken){
 
     // If the user not the *admin* they will not be able to get the id type
     if (!!response.account) {
-      console.log({response})
       return response.account.id
     } else {
       const userUri = config.cbsApiAddress + '/api/self/accounts'//?fields=id'
