@@ -41,7 +41,7 @@ async function getUserId(sessionToken){
     }
   }
   try{
-    const userUri = config.cbsApiAddress + '/api/users/self'//?fields=id'
+    const userUri = config.cbsApiAddress + '/api/users/self'
     const userResponse = await (await fetch(userUri, options)).json()
     return userResponse.id
   } catch(err){
