@@ -21,11 +21,9 @@ async function getPrimaryAccount(sessionToken){
       console.log({response})
       return response.account.id
     } else {
-      //const userUri = config.cbsApiAddress + '/api/self/accounts'//?fields=id'
-      const userUri = config.cbsApiAddress + '/api/users/self'//?fields=id'
+      const userUri = config.cbsApiAddress + '/api/self/accounts'//?fields=id'
       const userResponse = await (await fetch(userUri, options)).json()
-      //return userResponse[0].id
-      return userResponse.id
+      return userResponse[0].id
     }
   } catch(err){
     console.log('ERROR with calling /api/getPrimaryAccountId:', err)
@@ -35,6 +33,25 @@ async function getPrimaryAccount(sessionToken){
   }
 }
 
+async function getUserId(sessionToken){
+  const options = {
+    method: 'GET',
+    headers: {
+      'accept': 'application/json',
+      'Session-Token': sessionToken
+    }
+  }
+  try{
+    const userUri = config.cbsApiAddress + '/api/users/self'//?fields=id'
+    const userResponse = await (await fetch(userUri, options)).json()
+    return userResponse.id
+  } catch(err){
+    console.log('ERROR with calling /api/getUserId:', err)
+    return {
+      result: false
+    }
+  }
+}
 async function getAccountsList(sessionToken) {
   const uri = config.cbsApiAddress + '/api/self/accounts'
   const options = {
@@ -96,6 +113,7 @@ function accountSummarySSE(req, res) {
 
 module.exports = {
   getPrimaryAccount,
+  getUserId,
   getAccountsList,
   accountSummary,
   accountSummarySSE,
