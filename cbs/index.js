@@ -48,7 +48,7 @@ router.post('/getAuth', async (req, res) =>{
       sessionToken
     })
   } catch (err) {
-    console.error('Error calling the `auth.getAuth` function:', err)
+    console.error('Error calling the /getAuth route:', err)
     res.send({
       'error': 'ERROR while processing request. Please contact the system admin: '+err
     })
@@ -87,7 +87,46 @@ router.post('/getPrimaryAccountId', async function(req, res){
       primaryAccountId
     })
   } catch (err) {
-    console.error('Error calling the `auth.getAuth` function:', err)
+    console.error('Error calling the /getPrimaryAccountId route:', err)
+    res.send({
+      'error': 'ERROR while processing request. Please contact the system admin: '+err
+    })
+  }
+})
+
+/**
+ * @swagger
+ * /cbs/getUserId:
+ *   post:
+ *     tags:
+ *       - getUserId
+ *     description: Returns the userId of the current user
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: body
+ *         in: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             sessionToken:
+ *               type: string
+ *               example: xxx123xxx456xxx
+ *     responses:
+ *       200: {
+ *         description: Returns the id of the user
+ *       }
+ */
+router.post('/getUserId', async function(req, res){
+  try{
+    await checkParams(req.body, ['sessionToken'])
+    const userId = await accounts.getUserId(req.body.sessionToken)
+    res.send({
+      userId
+    })
+  } catch (err) {
+    console.error('Error calling the /getUserId route:', err)
     res.send({
       'error': 'ERROR while processing request. Please contact the system admin: '+err
     })
@@ -123,7 +162,7 @@ router.post('/getAccountsList', async (req, res) => {
     const account = await accounts.getAccountsList(req.body.sessionToken)
     res.send(account)
   } catch (err) {
-    console.error('Error calling the `accounts.getAccountsList` function:', err)
+    console.error('Error calling the /getAccountsList route:', err)
     res.send({
       'error': 'ERROR while processing request. Please contact the system admin: '+err
     })
@@ -177,7 +216,7 @@ router.post('/accountSummary', async (req, res) =>{
     const summary = await accounts.accountSummary(req.body.sessionToken, req.body.accountId, queryParameters)
     res.send(summary)
   } catch (err) {
-    console.error('Error calling the `auth.getAuth` function:', err)
+    console.error('Error calling the /accountSummary route:', err)
     res.send({
       'error': 'ERROR while processing request. Please contact the system admin: '+err
     })
@@ -269,7 +308,7 @@ router.post('/transfers', async (req, res) =>{
     const transfersResult = await transfers.transfers(req.body.sessionToken, req.body.accountId, queryParameters)
     res.send(transfersResult)
   } catch (err) {
-    console.error('Error calling the `auth.getAuth` function:', err)
+    console.error('Error calling the /transfers route:', err)
     res.send({
       'error': 'ERROR while processing request. Please contact the system admin: '+err
     })
@@ -317,7 +356,7 @@ router.post('/transferFromAdminPrimaryAccount', async (req, res) =>{
     const transfersResult = await transfer.transfer(sessionToken, transferDetails)
     res.send(transfersResult)
   } catch (err) {
-    console.error('Error calling the `auth.getAuth` function:', err)
+    console.error('Error calling the /transferFromAdminPrimaryAccount route:', err)
     res.send({
       'error': 'ERROR while processing request. Please contact the system admin: '+err
     })
@@ -362,7 +401,7 @@ router.post('/transferToAdminPrimaryAccount', async (req, res) => {
     const transfersResult = await transfer.transfer(sessionToken, transferDetails)
     res.send(transfersResult)
   } catch (err) {
-    console.error('Error calling the `auth.getAuth` function:', err)
+    console.error('Error calling the /transferFromAdminPrimaryAccount route:', err)
     res.send({
       'error': 'ERROR while processing request. Please contact the system admin: '+err
     })

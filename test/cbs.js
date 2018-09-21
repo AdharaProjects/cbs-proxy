@@ -16,6 +16,7 @@ const fetchOptionsTemplate = {
     'Accept': 'application/json',
   }
 }
+
 const getAuthUri = baseUrlProxy + '/cbs/getAuth'
 const getAuthOptions = (username, password) => ({
   ...fetchOptionsTemplate,
@@ -24,6 +25,7 @@ const getAuthOptions = (username, password) => ({
     password
   })
 })
+
 const getPrimaryAccountIdUri = baseUrlProxy + '/cbs/getPrimaryAccountId'
 const getPrimaryAccountIdOption = sessionToken => ({
   ...fetchOptionsTemplate,
@@ -31,6 +33,15 @@ const getPrimaryAccountIdOption = sessionToken => ({
     sessionToken
   })
 })
+
+const getUserIdUri = baseUrlProxy + '/cbs/getUserId'
+const getUserIdOptions = sessionToken => ({
+  ...fetchOptionsTemplate,
+  body: JSON.stringify({
+    sessionToken
+  })
+})
+
 const accountSummaryUri = baseUrlProxy + '/cbs/accountSummary'
 const accountSummaryOption = (sessionToken, accountId, queryParameters) => ({
   ...fetchOptionsTemplate,
@@ -125,6 +136,10 @@ describe("The core banking system proxy", function() {
       assert(true)
     })
 
+    it("should be able to return a user id", async () => {
+      const result = (await fetchJson(getUserIdUri, getUserIdOptions(user1SessionToken)))
+      expect(Number(result)).to.be.a('number')
+    })
 
     it("should return a summary for Admin from within the time range when `queryParameters.datePeriod` are provided", async () => {
       const result = (await fetchJson(accountSummaryUri, accountSummaryOption(
@@ -140,6 +155,7 @@ describe("The core banking system proxy", function() {
       expect(result.status.incoming.count).to.equal(5)
       expect(result.status.outgoing.count).to.equal(0)
     })
+
     it("should return a summary for User from within the time range when `queryParameters.datePeriod` are provided", async () => {
       const result = (await fetchJson(accountSummaryUri, accountSummaryOption(
         user1SessionToken,
@@ -215,6 +231,7 @@ describe("The core banking system proxy", function() {
       )))
       expect(creditResult.transfers.length).to.equal(5)
     })
+
     it("should filter users debit/credit transactions correctly transactions in time range when `queryParameters.datePeriod` are provided", async () => {
       const debitResult = (await fetchJson(transfersUri, transfersOption(
         user1SessionToken,
@@ -242,6 +259,7 @@ describe("The core banking system proxy", function() {
       expect(creditResult.transfers.length).to.equal(0)
     })
   })
+
   describe("Getting information about transactions FROM the Admin's Primary Account", async () => {
     let adminPrimaryAccountId
     let userAccountId
@@ -270,6 +288,7 @@ describe("The core banking system proxy", function() {
       expect(result.status.incoming.count).to.equal(0)
       expect(result.status.outgoing.count).to.equal(5)
     })
+
     it("should return a summary for user account from within the time range when `queryParameters.datePeriod` are provided", async () => {
       const result = (await fetchJson(accountSummaryUri, accountSummaryOption(
         user1SessionToken,
@@ -304,6 +323,7 @@ describe("The core banking system proxy", function() {
       )))
       expect(result.transfers.length).to.equal(5)
     })
+
     it("should return users transactions in time range when `queryParameters.datePeriod` are provided", async () => {
       const userTransferList = (await fetchJson(transfersUri, transfersOption(
         user1SessionToken,
@@ -317,6 +337,7 @@ describe("The core banking system proxy", function() {
       )))
       expect(userTransferList.transfers.length).to.equal(5)
     })
+
     it("should filter admin debit/credit transactions correctly transactions in time range when `queryParameters.datePeriod` are provided", async () => {
       const debitResult = (await fetchJson(transfersUri, transfersOption(
         adminSessionToken,
@@ -343,6 +364,7 @@ describe("The core banking system proxy", function() {
       )))
       expect(creditResult.transfers.length).to.equal(0)
     })
+
     it("should filter user debit/credit transactions correctly transactions in time range when `queryParameters.datePeriod` are provided", async () => {
       const debitResult = (await fetchJson(transfersUri, transfersOption(
         user1SessionToken,
