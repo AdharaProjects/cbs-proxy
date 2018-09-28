@@ -139,7 +139,7 @@ router.post('/getUserId', async function(req, res){
  *   post:
  *     tags:
  *       - accountSummary
- *     description: Returns accounts of the user
+ *     description: Returns a list of the user's account and a summary of each of them
  *     produces:
  *       - application/json
  *     parameters:
@@ -154,7 +154,7 @@ router.post('/getUserId', async function(req, res){
  *               example: xxx123xxx456xxx
  *     responses:
  *       200: {
- *         description: Returns the id of the user's primary account
+ *         description: Returns a list of the user's account and a summary of each of them
  *       }
  */
 router.post('/getAccountsList', async (req, res) => {
