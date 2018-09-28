@@ -1,11 +1,14 @@
 const fetch = require('node-fetch')
 const queryString = require('query-string')
 const SSEChannel = require('sse-pubsub')
+const EventSource = require('eventsource')
 
 const config = require('../config')
 
+const userChannels = {}
+
 async function getPrimaryAccount(sessionToken){
-  const uri = config.cbsApiAddress + '/api/self/accounts/organization/data-for-history'//?fields=id'
+  const uri = config.cbsApiAddress + '/api/self/accounts/organization/data-for-history'
   const options = {
     method: 'GET',
     headers: {
@@ -95,19 +98,31 @@ async function accountSummary(sessionToken, accountId, queryParameters) {
   }
 }
 
-async function watchForCbsBalanceChanges(channel, sessionToken) {
-  const accountDetails = await getAccountsList(sessionToken)
+function watchForCbsBalanceChanges(channel, sessionToken, accountId) {
+  // NOTE:: This generates a random string (in a very clever way, hint base 36 ;) ).
+  //        This parameter is required by the npm install eventsourcecyclos client, but it can be anything.
+  const clientId = Math.random().toString(36).substring(7)
+  const uri = config.cbsApiAddress + '/api/push/subscribe?clientId='+clientId+'&kinds=accountStatus&accountIds='+accountId
+  const eventSourceConfig = {headers: {'Session-Token': sessionToken}};
+  const eventSource = new EventSource(uri, eventSourceConfig)
 
-  channel.publish(accountDetails, 'accountDetails')
-
-  setTimeout(() => watchForCbsBalanceChanges(channel, sessionToken), 1500)
+  eventSource.addEventListener('accountStatus', function (event) {
+    channel.publish(event.data, 'accountDetails')
+  })
 }
 
 function accountSummarySSE(req, res) {
-  const uniqueChannel = new SSEChannel();
-  uniqueChannel.subscribe(req, res)
+  const { sessionToken, accountId } = req.query
+  if (!userChannels[sessionToken] || !userChannels[sessionToken].channel) {
+    userChannels[sessionToken] = {
+      channel: new SSEChannel(),
+      // TODO:: Add a ttl for channels so that if they aren't used for some period of time they are cleaned out
+    }
 
-  watchForCbsBalanceChanges(uniqueChannel, req.query.sessionToken)
+    watchForCbsBalanceChanges(userChannels[sessionToken].channel, sessionToken, accountId)
+  }
+
+  userChannels[sessionToken].channel.subscribe(req, res)
 }
 
 module.exports = {
