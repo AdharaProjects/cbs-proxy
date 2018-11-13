@@ -6,7 +6,7 @@ const config = JSON.parse(configFile)
 
 module.exports = {
   apiServerPort: process.env.API_SERVER_PORT || config.apiServerPort,
-  cbsApiAddress: process.env.CBS_SERVER_ADDRESS || config.cbsApiAddress,
+  cbsApiAddress: process.env.CBS_API_ADDRESS || config.cbsApiAddress,
 }
 
 console.log("\nDEFAULTS LOADED:", path.resolve(configPath))
