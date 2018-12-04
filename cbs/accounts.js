@@ -125,11 +125,31 @@ function accountSummarySSE(req, res) {
   userChannels[sessionToken].channel.subscribe(req, res)
 }
 
+async function getAccountBalances(sessionToken, accountType) {
+  const uri = config.cbsApiAddress + '/api/accounts/' + accountType + '/user-balances'
+  const options = {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Session-Token': sessionToken
+    }
+  }
+  try{
+    return await (await fetch(uri, options)).json()
+  } catch(err){
+    return {
+      result: false,
+      err
+    }
+  }
+}
+
 module.exports = {
   getPrimaryAccount,
   getUserId,
   getAccountsList,
   accountSummary,
   accountSummarySSE,
+  getAccountBalances,
   config,
 }

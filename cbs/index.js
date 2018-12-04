@@ -408,4 +408,48 @@ router.post('/transferToAdminPrimaryAccount', async (req, res) => {
   }
 })
 
+/**
+ * @swagger
+ * /cbs/accountBalances:
+ *   post:
+ *     tags:
+ *       - accountBalances
+ *     description: Returns a list of accounts of a particular type with their balances. Requires admin privileges.
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: body
+ *         in: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             sessionToken:
+ *               type: string
+ *               example: xxx123xxx456xxx
+ *             accountType:
+ *               type: string
+ *               example: user
+ *     responses:
+ *       200: {
+ *         description: Returns a list of accounts of a particular type with their balances
+ *       }
+ */
+
+router.post('/accountBalances', async function(req, res) {
+  try{
+    await checkParams(req.body, ['sessionToken', 'accountType'])
+    const { sessionToken, accountType } = req.body
+    const accountBalances = await accounts.getAccountBalances(sessionToken, accountType)
+    res.send({
+      accountBalances
+    })
+  } catch (err) {
+    console.error('Error calling the /accountBalances route:', err)
+    res.status(400).json({
+      error: 'Unable to process request. Please contact the system admin: '+err
+    })
+  }
+})
+
 module.exports = router
