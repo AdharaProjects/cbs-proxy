@@ -234,7 +234,7 @@ router.post('/accountSummary', async (req, res) =>{
  *       - text/event-stream
  *       - application/json
  *     parameters:
- *       - sessionToken: string
+ *       - name: sessionToken
  *         description: the logged in user's session token
  *         in: path
  *         required: true
@@ -411,25 +411,23 @@ router.post('/transferToAdminPrimaryAccount', async (req, res) => {
 /**
  * @swagger
  * /cbs/accountBalances:
- *   post:
+ *   get:
  *     tags:
  *       - accountBalances
  *     description: Returns a list of accounts of a particular type with their balances. Requires admin privileges.
  *     produces:
  *       - application/json
  *     parameters:
- *       - name: body
- *         in: body
+ *       - name: sessionToken
+ *         description: the logged in user's session token
+ *         in: query
  *         required: true
- *         schema:
- *           type: object
- *           properties:
- *             sessionToken:
- *               type: string
- *               example: xxx123xxx456xxx
- *             accountType:
- *               type: string
- *               example: user
+ *         type: string
+ *       - name: accountType
+ *         description: the account type
+ *         in: query
+ *         required: true
+ *         type: string
  *     responses:
  *       200: {
  *         description: Returns a list of accounts of a particular type with their balances
