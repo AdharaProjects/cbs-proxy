@@ -436,10 +436,10 @@ router.post('/transferToAdminPrimaryAccount', async (req, res) => {
  *       }
  */
 
-router.post('/accountBalances', async function(req, res) {
+router.get('/accountBalances', async function(req, res) {
   try{
-    await checkParams(req.body, ['sessionToken', 'accountType'])
-    const { sessionToken, accountType } = req.body
+    await checkParams(req.query, ['sessionToken', 'accountType'])
+    const { sessionToken, accountType } = req.query
     const accountBalances = await accounts.getAccountBalances(sessionToken, accountType)
     res.send({
       accountBalances

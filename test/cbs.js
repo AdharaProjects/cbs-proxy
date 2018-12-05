@@ -16,6 +16,13 @@ const fetchOptionsTemplate = {
     'Accept': 'application/json',
   }
 }
+const getOptionsTemplate = {
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  }
+}
 
 const getAuthUri = baseUrlProxy + '/cbs/getAuth'
 const getAuthOptions = (username, password) => ({
@@ -71,13 +78,11 @@ const adminPrimaryTransferOption = (transferDataBody) => ({
   body: JSON.stringify(transferDataBody)
 })
 
-const accountBalancesUri = baseUrlProxy + '/cbs/accountBalances'
-const getAccountBalancesOptions = (sessionToken, accountType) => ({
-  ...fetchOptionsTemplate,
-  body: JSON.stringify({
-    sessionToken,
-    accountType
-  })
+const getAccountBalancesUri = (sessionToken, accountType) => {
+  return baseUrlProxy+'/cbs/accountBalances?sessionToken='+sessionToken+'&accountType='+accountType
+}
+const getAccountBalancesOptions = () => ({
+  ...getOptionsTemplate
 })
 
 let toAdminPrimaryAccountStartTime
@@ -127,7 +132,7 @@ describe("The core banking system proxy", function() {
 
   describe("Getting information about all accounts of a particular type", async function() {
     it("should return a list of accounts with their balances", async function() {
-      const result = await fetchJson(accountBalancesUri, getAccountBalancesOptions(adminSessionToken, 'user'))
+      const result = await fetchJson(getAccountBalancesUri(adminSessionToken, 'user'), getAccountBalancesOptions())
       expect(result.accountBalances).to.not.be.undefined
       expect(result.accountBalances.length).to.be.at.least(0)
     })
