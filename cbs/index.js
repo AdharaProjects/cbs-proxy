@@ -234,7 +234,7 @@ router.post('/accountSummary', async (req, res) =>{
  *       - text/event-stream
  *       - application/json
  *     parameters:
- *       - sessionToken: string
+ *       - name: sessionToken
  *         description: the logged in user's session token
  *         in: path
  *         required: true
@@ -404,6 +404,48 @@ router.post('/transferToAdminPrimaryAccount', async (req, res) => {
     console.error('Error calling the /transferFromAdminPrimaryAccount route:', err)
     res.send({
       'error': 'ERROR while processing request. Please contact the system admin: '+err
+    })
+  }
+})
+
+/**
+ * @swagger
+ * /cbs/accountBalances:
+ *   get:
+ *     tags:
+ *       - accountBalances
+ *     description: Returns a list of accounts of a particular type with their balances. Requires admin privileges.
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: sessionToken
+ *         description: the logged in user's session token
+ *         in: query
+ *         required: true
+ *         type: string
+ *       - name: accountType
+ *         description: the account type
+ *         in: query
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200: {
+ *         description: Returns a list of accounts of a particular type with their balances
+ *       }
+ */
+
+router.get('/accountBalances', async function(req, res) {
+  try{
+    await checkParams(req.query, ['sessionToken', 'accountType'])
+    const { sessionToken, accountType } = req.query
+    const accountBalances = await accounts.getAccountBalances(sessionToken, accountType)
+    res.send({
+      accountBalances
+    })
+  } catch (err) {
+    console.error('Error calling the /accountBalances route:', err)
+    res.status(400).json({
+      error: 'Unable to process request. Please contact the system admin: '+err
     })
   }
 })
