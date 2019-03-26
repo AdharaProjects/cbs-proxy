@@ -11,11 +11,8 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: Login to dockerhub if needed (if this command fails when run locally please pull this container manually)
-          command: |
-            if [ ! "$(docker images -a | awk '$1=="adharaprojects/blockchain-proxy" && $2=="latest" {print}')" ]; then
-              docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-            fi
+          name: Login to dockerhub
+          command: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
       - run:
           name: Run tests
           command: make test 
@@ -42,7 +39,7 @@ jobs:
          command: if [ "$CIRCLE_BRANCH" == "master" ]; then DOCKER_IMAGE_TAG=latest make docker-publish-tag; fi
       - run:
          name: Push Git Tag to Docker Hub
-         command: if [ -z "$CIRCLE_TAG" ]; then DOCKER_IMAGE_TAG=$CIRCLE_TAG make docker-publish-tag; fi
+         command: if [[ ! -z "$CIRCLE_TAG" ]]; then DOCKER_IMAGE_TAG=$CIRCLE_TAG make docker-publish-tag; fi
 
 workflows:
   version: 2
