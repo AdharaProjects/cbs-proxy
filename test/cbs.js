@@ -115,7 +115,7 @@ const makeRandomTransfersFromAdminPrimaryAccount = async (numberOfTransfers, ses
 }
 
 describe("The core banking system proxy", function() {
-  this.timeout(30*1000)
+  this.timeout(60*1000)
 
   let adminSessionToken
   let user1SessionToken
